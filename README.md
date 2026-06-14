@@ -1,32 +1,43 @@
-# Personal Academia Smart V14 — PWA Offline
+# Personal Academia Smart V14.1 — PWA Offline
 
-App de treino visual ABC para uso no celular, sem Google Apps Script.
+Versão offline-first para celular, sem Google Apps Script como motor principal.
 
-## Arquivos principais
-- `index.html` — tela principal
-- `styles.css` — visual
-- `app.js` — lógica do app
-- `manifest.json` — instalação como PWA
-- `service-worker.js` — cache/offline
-- `data/workouts.json` — treinos e máquinas
-- `assets/gifs/` — pasta opcional para GIFs hospedados
+## Uso principal
 
-## GIFs
-Você pode usar os GIFs de duas formas:
+- Abra pelo link publicado no GitHub Pages.
+- No Chrome Android, use **Adicionar à tela inicial** ou **Instalar app**.
+- O app salva cargas, medidas e progresso no próprio navegador/celular.
 
-1. Dentro do app: Config > Importar GIFs/imagens. Eles ficam salvos no celular.
-2. No repositório: coloque em `assets/gifs/` e liste em `assets/manifest.json`.
+## GIFs e imagens
 
-Exemplo de `assets/manifest.json`:
+### Importar direto no exercício
 
-```json
-{
-  "assets": [
-    { "name": "supino-articulado.gif", "path": "assets/gifs/supino-articulado.gif" },
-    { "name": "leg-press.gif", "path": "assets/gifs/leg-press.gif" }
-  ]
-}
-```
+Na tela de treino, quando aparecer **GIF pendente**, toque em:
+
+**Importar GIF deste exercício**
+
+Escolha um GIF, WebP, PNG ou JPG. O arquivo fica vinculado diretamente ao exercício atual, sem depender do nome do arquivo.
+
+Depois você pode:
+
+- **Trocar GIF** no próprio exercício.
+- **Remover GIF** se quiser desfazer.
+
+### Importar em lote
+
+Em **Config > GIFs e imagens**, importe vários arquivos. O app tenta associar pelo nome do arquivo.
+
+Exemplos de nomes úteis:
+
+- `puxada-alta.gif`
+- `supino-articulado.gif`
+- `leg-press.gif`
+- `flexora.gif`
 
 ## Backup
-Use Config > Exportar JSON para guardar suas cargas e medidas.
+
+Use **Config > Exportar JSON** para salvar seus dados de treino e medidas. GIFs importados direto ficam no navegador do dispositivo e não entram no JSON.
+
+## Atualizações
+
+Ao enviar nova versão ao GitHub Pages, pode ser necessário fechar e abrir o app novamente. Se o visual antigo persistir, limpe o cache do site no Chrome.

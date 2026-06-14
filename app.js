@@ -9,7 +9,7 @@ let remain = 0;
 let toastTimer = null;
 
 let state = {
-  version: 'V14-PWA',
+  version: 'V14.1-PWA',
   dayIndex: 0,
   lastRestDate: '',
   quick: { energy: 'normal', back: 'ok' },
@@ -121,7 +121,7 @@ function loadLocal(){
 }
 function saveAll(show=false){
   state.updatedAt = new Date().toISOString();
-  state.version = 'V14-PWA';
+  state.version = 'V14.1-PWA';
   localStorage.setItem(APP_KEY, JSON.stringify(state));
   if(show) setSaveStatus('Salvo localmente: ' + new Date().toLocaleTimeString('pt-BR'));
 }
@@ -163,6 +163,8 @@ function bindEvents(){
   $('btnAddMeasure').addEventListener('click', e => tapButton(e.currentTarget, 'Salvando...', addMeasure));
   $('btnSaveConfig').addEventListener('click', e => tapButton(e.currentTarget, 'Salvando...', () => { state.form = readConfigForm(); applySpotify(false); saveAll(true); toast('Configuração salva.'); }));
   $('assetImport').addEventListener('change', importAssets);
+  const exerciseAssetInput = $('exerciseAssetImport');
+  if(exerciseAssetInput) exerciseAssetInput.addEventListener('change', importExerciseAsset);
   $('btnClearAssets').addEventListener('click', e => tapButton(e.currentTarget, 'Limpando...', clearAssets));
   $('btnExport').addEventListener('click', e => tapButton(e.currentTarget, 'Exportando...', exportBackup));
   $('btnExportTop').addEventListener('click', e => tapButton(e.currentTarget, '⇩', exportBackup));
@@ -226,14 +228,15 @@ function renderExercise(ex, idx){
   const machineVal = m.machine || ex.machine || '';
   const machinePending = isMachinePending(machineVal);
   const asset = findBestAssetSync(ex);
-  const imageHtml = asset ? `<img class="assetImage" src="${asset.src}" alt="${escapeHtml(ex.name)}">` : `<div class="assetMissing"><b>GIF pendente</b><br>Importe um arquivo com nome parecido:<br>${escapeHtml(ex.keywords.slice(0,3).join(' / '))}</div>`;
+  const imageHtml = asset ? `<div class="assetWrap"><img class="assetImage" src="${asset.src}" alt="${escapeHtml(ex.name)}"><div class="assetBadge">${asset.direct?'GIF vinculado':'GIF associado'}</div></div>` : `<div class="assetMissing"><b>GIF pendente</b><br>Importe direto neste exercício ou use arquivo com nome parecido:<br>${escapeHtml(ex.keywords.slice(0,3).join(' / '))}<button type="button" class="miniAssetBtn" onclick="directImportAsset('${ex.id}')">📁 Importar GIF deste exercício</button></div>`;
+  const assetControls = `<div class="assetControls"><button type="button" class="miniAssetBtn" onclick="directImportAsset('${ex.id}')">${asset?'Trocar GIF':'Importar GIF'}</button>${asset && asset.direct ? `<button type="button" class="miniAssetBtn dangerMini" onclick="removeExerciseAsset('${ex.id}')">Remover</button>` : ''}</div>`;
   const muscles = ex.muscles || [];
   const muscleBars = muscles.map((mu, i) => `<div class="muscleBar"><div class="barHead"><span>${escapeHtml(mu)}</span><b>${i===0?'principal':'apoio'}</b></div><div class="heat"><span style="width:${i===0?100:65}%"></span></div></div>`).join('');
   return `<article class="exercise ${current?'current':''} ${p.done?'done':''}" data-exid="${ex.id}">
     <div class="exTop"><div class="topTags"><span class="groupTag ${groupClass(ex.group)}">${escapeHtml(ex.group)}</span><span class="seriesTag">Série ${p.set}/${ex.sets}</span></div><div class="timerMini"><div class="label">Descanso</div><div id="inlineTimerTxt_${ex.id}" class="time">00</div></div></div>
     <div class="exName">${escapeHtml(displayName(ex))}</div>
     <div class="small">${escapeHtml(ex.type)} • Máquina preferencial: ${escapeHtml(ex.machine)} • Alternativa: ${escapeHtml(ex.alt)}</div>
-    <div class="visualGrid"><div class="visualPanel"><div class="visualTitle">Movimento</div>${imageHtml}</div><div class="visualPanel"><div class="visualTitle">Músculos</div><div class="muscleBars">${muscleBars}</div></div></div>
+    <div class="visualGrid"><div class="visualPanel"><div class="visualTitle">Movimento</div>${imageHtml}${assetControls}</div><div class="visualPanel"><div class="visualTitle">Músculos</div><div class="muscleBars">${muscleBars}</div></div></div>
     <div class="muscleList">${muscles.map((mu,i)=>`<span class="muscleChip ${i===0?'main':'sec'}">${escapeHtml(mu)}</span>`).join('')}</div>
     <div class="small">Reps: ${escapeHtml(ex.reps)} • descanso sugerido: ${ex.rest}s</div>
     <div class="cueBox">${escapeHtml(ex.cue)}</div>
@@ -268,6 +271,7 @@ function updateInlineTimer(){ document.querySelectorAll('[id^="inlineTimerTxt_"]
 function stopTimer(clear=true){ if(timer) clearInterval(timer); timer = null; if(clear){ state.activeRestExercise = null; remain = 0; updateInlineTimer(); } }
 
 let importedAssetIndex = [];
+let pendingExerciseAssetId = null;
 function openDB(){
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 1);
@@ -279,16 +283,64 @@ function openDB(){
 async function dbPutAsset(name, blob){ const db = await openDB(); return new Promise((resolve, reject) => { const tx = db.transaction(STORE,'readwrite'); tx.objectStore(STORE).put({ name, normalizedName:norm(name), blob, type:blob.type, savedAt:new Date().toISOString() }); tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); }); }
 async function dbGetAllAssets(){ const db = await openDB(); return new Promise((resolve, reject) => { const tx = db.transaction(STORE,'readonly'); const req = tx.objectStore(STORE).getAll(); req.onsuccess = () => resolve(req.result || []); req.onerror = () => reject(req.error); }); }
 async function dbClearAssets(){ const db = await openDB(); return new Promise((resolve, reject) => { const tx = db.transaction(STORE,'readwrite'); tx.objectStore(STORE).clear(); tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); }); }
+async function dbDeleteAsset(name){ const db = await openDB(); return new Promise((resolve, reject) => { const tx = db.transaction(STORE,'readwrite'); tx.objectStore(STORE).delete(name); tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); }); }
 async function importAssets(ev){ const files = Array.from(ev.target.files || []); if(!files.length) return; let count = 0; for(const f of files){ if(!f.type.startsWith('image/')) continue; await dbPutAsset(f.name, f); count++; } ev.target.value = ''; await renderAssetStatus(); renderExercises(); toast(`${count} asset(s) importado(s).`); }
+function directImportAsset(exid){
+  const ex = findExercise(exid);
+  if(!ex){ toast('Exercício não encontrado.', true); return; }
+  pendingExerciseAssetId = exid;
+  tactile();
+  const input = $('exerciseAssetImport');
+  if(!input){ toast('Seletor de GIF não encontrado.', true); return; }
+  input.value = '';
+  input.click();
+}
+async function importExerciseAsset(ev){
+  const file = ev.target.files && ev.target.files[0];
+  const exid = pendingExerciseAssetId;
+  ev.target.value = '';
+  pendingExerciseAssetId = null;
+  if(!file || !exid) return;
+  if(!file.type.startsWith('image/')){ toast('Escolha GIF, WebP, PNG ou JPG.', true); return; }
+  const ex = findExercise(exid);
+  if(!ex){ toast('Exercício não encontrado.', true); return; }
+  const key = 'exercise:' + exid;
+  const recordBlob = file.slice(0, file.size, file.type || 'application/octet-stream');
+  recordBlob.name = file.name;
+  await dbPutExerciseAsset(key, file, exid);
+  await renderAssetStatus();
+  renderExercises();
+  toast('GIF vinculado a: ' + ex.name);
+}
+async function dbPutExerciseAsset(key, file, exid){
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).put({ name:key, displayName:file.name, normalizedName:norm(file.name), exerciseId:exid, blob:file, type:file.type, savedAt:new Date().toISOString(), direct:true });
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function removeExerciseAsset(exid){
+  const ex = findExercise(exid);
+  if(!ex) return;
+  if(!confirm('Remover GIF vinculado a este exercício?')) return;
+  await dbDeleteAsset('exercise:' + exid);
+  await renderAssetStatus();
+  renderExercises();
+  toast('GIF removido deste exercício.');
+}
 async function clearAssets(){ if(!confirm('Remover GIFs/imagens importados deste celular?')) return; await dbClearAssets(); await renderAssetStatus(); renderExercises(); toast('GIFs importados removidos.'); }
-async function renderAssetStatus(){ importedAssetIndex = await dbGetAllAssets().catch(() => []); const totalManifest = (state.assetManifest || []).length; const el = $('assetStatus'); if(el) el.textContent = `${importedAssetIndex.length} importado(s) no celular • ${totalManifest} listado(s) no pacote.`; }
-function matchScore(asset, ex){ const n = asset.normalizedName || norm(asset.name || asset.path); let score = 0; (ex.keywords || []).forEach(k => { const nk = norm(k); if(n.includes(nk)) score += 5; nk.split(' ').forEach(part => { if(part.length > 3 && n.includes(part)) score += 1; }); }); norm(ex.name).split(' ').forEach(part => { if(part.length > 4 && n.includes(part)) score += 1; }); return score; }
+async function renderAssetStatus(){ importedAssetIndex = await dbGetAllAssets().catch(() => []); const totalManifest = (state.assetManifest || []).length; const directCount = importedAssetIndex.filter(a => a.direct || a.exerciseId).length; const batchCount = importedAssetIndex.length - directCount; const el = $('assetStatus'); if(el) el.textContent = `${directCount} vinculado(s) direto • ${batchCount} importado(s) por nome • ${totalManifest} listado(s) no pacote.`; }
+function matchScore(asset, ex){ const n = asset.normalizedName || norm(asset.displayName || asset.name || asset.path); let score = 0; (ex.keywords || []).forEach(k => { const nk = norm(k); if(n.includes(nk)) score += 5; nk.split(' ').forEach(part => { if(part.length > 3 && n.includes(part)) score += 1; }); }); norm(ex.name).split(' ').forEach(part => { if(part.length > 4 && n.includes(part)) score += 1; }); return score; }
 function findBestAssetSync(ex){
+  const direct = importedAssetIndex.find(a => a.exerciseId === ex.id || a.name === ('exercise:' + ex.id));
+  if(direct && direct.blob){ return { name:direct.displayName || direct.name, src:URL.createObjectURL(direct.blob), direct:true }; }
   let best = null, bestScore = 0;
-  importedAssetIndex.forEach(a => { const s = matchScore(a, ex); if(s > bestScore){ best = a; bestScore = s; } });
-  if(best && bestScore > 0){ return { name:best.name, src:URL.createObjectURL(best.blob) }; }
+  importedAssetIndex.filter(a => !a.exerciseId && !String(a.name || '').startsWith('exercise:')).forEach(a => { const s = matchScore(a, ex); if(s > bestScore){ best = a; bestScore = s; } });
+  if(best && bestScore > 0){ return { name:best.displayName || best.name, src:URL.createObjectURL(best.blob), direct:false }; }
   (state.assetManifest || []).forEach(a => { const s = matchScore(a, ex); if(s > bestScore){ best = a; bestScore = s; } });
-  if(best && best.path && bestScore > 0){ return { name:best.name || best.path, src:best.path }; }
+  if(best && best.path && bestScore > 0){ return { name:best.name || best.path, src:best.path, direct:false }; }
   return null;
 }
 
@@ -299,7 +351,7 @@ function renderMachineMap(){ const cat = (plan && plan.machineCatalog) || {}; co
 
 function addMeasure(){ const m = { data:$('medData').value || new Date().toISOString().slice(0,10), peso:$('medPeso').value, cintura:$('cintura').value, quadril:$('quadril').value, abdomen:$('abdomen').value, panturrilha:$('panturrilha').value }; state.measures.unshift(m); renderMeasures(); saveAll(true); toast('Medida salva.'); }
 function renderMeasures(){ if(!state.measures || !state.measures.length){ $('measureTable').innerHTML = '<p class="lead">Sem medidas cadastradas.</p>'; return; } $('measureTable').innerHTML = '<div style="overflow:auto"><table><tr><th>Data</th><th>Peso</th><th>Cintura</th><th>Quadril</th><th>Abd.</th><th>Panturrilha</th></tr>' + state.measures.map(m => `<tr><td>${escapeHtml(m.data||'')}</td><td>${escapeHtml(m.peso||'')}</td><td>${escapeHtml(m.cintura||'')}</td><td>${escapeHtml(m.quadril||'')}</td><td>${escapeHtml(m.abdomen||'')}</td><td>${escapeHtml(m.panturrilha||'')}</td></tr>`).join('') + '</table></div>'; }
-function exportBackup(){ saveAll(false); const blob = new Blob([JSON.stringify(state,null,2)], { type:'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'personal-academia-smart-v14-backup.json'; a.click(); URL.revokeObjectURL(a.href); toast('Backup exportado.'); }
+function exportBackup(){ saveAll(false); const blob = new Blob([JSON.stringify(state,null,2)], { type:'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'personal-academia-smart-v14-1-backup.json'; a.click(); URL.revokeObjectURL(a.href); toast('Backup exportado.'); }
 function importBackup(ev){ const f = ev.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = () => { try{ state = mergeState(state, JSON.parse(r.result)); localStorage.setItem(APP_KEY, JSON.stringify(state)); afterLoad(); toast('Backup importado.'); }catch(e){ toast('Arquivo inválido: ' + e.message, true); } }; r.readAsText(f); ev.target.value = ''; }
 function clearLocalData(){ if(!confirm('Apagar dados locais deste navegador?')) return; localStorage.removeItem(APP_KEY); toast('Dados locais apagados.'); setTimeout(() => location.reload(), 600); }
 
