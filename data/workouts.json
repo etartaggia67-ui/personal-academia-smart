@@ -1,0 +1,75 @@
+{
+  "version": "V14-PWA",
+  "machineCatalog": {
+    "01":"Leg press 45°",
+    "04":"Cadeira abdutora",
+    "05":"Cadeira adutora",
+    "06":"Glúteo/coice máquina",
+    "08":"Cadeira extensora",
+    "10":"Flexora pernas",
+    "24":"Supino inclinado articulado",
+    "26":"Peck deck / deltóide posterior",
+    "30":"Tríceps polia",
+    "31":"Remada articulada baixa",
+    "40":"Abdômen/lombar",
+    "50":"Shoulder press",
+    "52":"Tríceps máquina aberta",
+    "56":"Supino articulado convergente",
+    "57":"Puxada alta articulada",
+    "61":"Graviton assistido",
+    "62":"Polias/cabos"
+  },
+  "pendingMachines": ["", "A conferir", "A CONFIRMAR", "23", "53", "60", "67"],
+  "schedule": {
+    "defaultRestDay": 3,
+    "pattern": ["A", "B", "C", "A", "B", "C"]
+  },
+  "workouts": [
+    {
+      "code":"A",
+      "name":"A • Peito + ombro + tríceps + core",
+      "focus":"Peito, ombro anterior, tríceps e core leve.",
+      "warmup":"Esteira: 5–8 min leve antes para aquecer; cardio principal depois das máquinas.",
+      "list":[
+        {"id":"a_supino_convergente_56","name":"Supino articulado convergente","type":"Máquina Smart","group":"Tronco","machine":"56","alt":"Supino inclinado 24","keywords":["supino","chest press","peitoral","press","convergente"],"muscles":["Peitoral","Tríceps","Ombro anterior"],"sets":4,"reps":"8–12","rest":90,"cue":"Empurre sem travar cotovelos. Escápulas encaixadas.","bodyWeightLevel":"baixo"},
+        {"id":"a_supino_inclinado_24","name":"Supino inclinado articulado","type":"Máquina Smart","group":"Tronco","machine":"24","alt":"Chest press convergente 56","keywords":["supino inclinado","incline press","peitoral superior","chest"],"muscles":["Peitoral superior","Tríceps","Ombro anterior"],"sets":3,"reps":"8–12","rest":90,"cue":"Subida controlada. Não deixe o ombro subir junto.","bodyWeightLevel":"baixo"},
+        {"id":"a_peck_deck_26","name":"Peck deck / crucifixo máquina","type":"Máquina Smart","group":"Tronco","machine":"26","alt":"Crossover leve no cabo","keywords":["peck deck","voador","crucifixo","fly","peitoral"],"muscles":["Peitoral","Ombro anterior"],"sets":3,"reps":"10–12","rest":75,"cue":"Abra com controle. Feche sem bater os pesos.","bodyWeightLevel":"baixo"},
+        {"id":"a_elevacao_lateral_livre","name":"Elevação lateral com halteres","type":"Livre controlado","group":"Livre","machine":"LIVRE","alt":"Elevação lateral no cabo","keywords":["elevação lateral","elevacao lateral","lateral raise","ombro"],"muscles":["Ombro lateral","Trapézio leve"],"sets":3,"reps":"10–15","rest":60,"cue":"Pouca carga, braço até a linha do ombro. Sem roubar na lombar.","bodyWeightLevel":"baixo"},
+        {"id":"a_triceps_maquina_52","name":"Tríceps máquina aberta","type":"Máquina Smart","group":"Braços","machine":"52","alt":"Tríceps corda 62","keywords":["triceps maquina","tríceps máquina","triceps aberta","dip machine"],"muscles":["Tríceps","Peitoral auxiliar"],"sets":3,"reps":"10–12","rest":75,"cue":"Cotovelos firmes. Movimento controlado.","bodyWeightLevel":"baixo"},
+        {"id":"a_triceps_corda_62","name":"Tríceps corda na polia","type":"Cabo","group":"Braços","machine":"62","alt":"Tríceps máquina 52","keywords":["triceps corda","tríceps corda","pushdown","polia"],"muscles":["Tríceps"],"sets":3,"reps":"10–15","rest":60,"cue":"Cotovelos colados. Abra a corda no final.","bodyWeightLevel":"baixo"},
+        {"id":"a_core_abdomen_40","name":"Abdômen máquina","type":"Máquina Smart","group":"Core","machine":"40","alt":"Pallof press no cabo","keywords":["abdominal maquina","abdomen","crunch machine","core"],"muscles":["Abdômen","Core"],"sets":3,"reps":"12–15","rest":60,"cue":"Contraia sem puxar o pescoço. Lombar protegida.","bodyWeightLevel":"baixo"}
+      ]
+    },
+    {
+      "code":"B",
+      "name":"B • Costas + bíceps + posterior + core",
+      "focus":"Costas, bíceps, deltoide posterior e core anti-rotação.",
+      "warmup":"Esteira: 5–8 min leve antes para aquecer; cardio principal depois das máquinas.",
+      "list":[
+        {"id":"b_puxada_alta_57","name":"Puxada alta articulada","type":"Máquina Smart","group":"Tronco","machine":"57","alt":"Puxada frente neutra","keywords":["puxada alta","lat pulldown","puxada articulada","costas"],"muscles":["Dorsal","Bíceps","Trapézio"],"sets":4,"reps":"8–12","rest":90,"cue":"Puxe com cotovelos. Não transforme em bíceps puro.","bodyWeightLevel":"baixo"},
+        {"id":"b_remada_articulada_31","name":"Remada articulada baixa","type":"Máquina Smart","group":"Tronco","machine":"31","alt":"Remada baixa no cabo","keywords":["remada","seated row","remada baixa","row"],"muscles":["Costas","Bíceps","Posterior de ombro"],"sets":4,"reps":"8–12","rest":90,"cue":"Peito apoiado se possível. Evite puxar com lombar.","bodyWeightLevel":"baixo"},
+        {"id":"b_graviton_61","name":"Graviton assistido","type":"Máquina Smart assistida","group":"Tronco","machine":"61","alt":"Puxada neutra","keywords":["graviton","barra assistida","pulldown assistido","assistida"],"muscles":["Dorsal","Bíceps"],"sets":3,"reps":"8–10","rest":90,"cue":"Use assistência suficiente. Não precisa fazer livre agora.","bodyWeightLevel":"assistido"},
+        {"id":"b_reverse_fly_26","name":"Deltóide posterior no peck deck","type":"Máquina Smart","group":"Tronco","machine":"26","alt":"Face pull no cabo","keywords":["deltoide posterior","reverse fly","peck deck reverso","posterior ombro"],"muscles":["Posterior de ombro","Trapézio","Romboides"],"sets":3,"reps":"12–15","rest":60,"cue":"Controle e amplitude confortável. Sem jogar o tronco.","bodyWeightLevel":"baixo"},
+        {"id":"b_rosca_polia_62","name":"Rosca bíceps na polia","type":"Cabo","group":"Braços","machine":"62","alt":"Rosca direta halteres","keywords":["rosca biceps","bíceps polia","curl cable","biceps"],"muscles":["Bíceps","Antebraço"],"sets":3,"reps":"10–12","rest":60,"cue":"Cotovelos fixos. Evite balançar o corpo.","bodyWeightLevel":"baixo"},
+        {"id":"b_rosca_martelo_livre","name":"Rosca martelo com halteres","type":"Livre controlado","group":"Livre","machine":"LIVRE","alt":"Rosca alternada no cabo","keywords":["rosca martelo","hammer curl","biceps halter"],"muscles":["Bíceps","Braquial","Antebraço"],"sets":3,"reps":"10–12","rest":60,"cue":"Carga moderada. Punho neutro.","bodyWeightLevel":"baixo"},
+        {"id":"b_core_pallof_62","name":"Pallof press / anti-rotação","type":"Cabo","group":"Core","machine":"62","alt":"Abdômen máquina 40","keywords":["pallof","anti rotacao","anti-rotação","core cabo"],"muscles":["Core","Oblíquos"],"sets":3,"reps":"10–12 cada lado","rest":60,"cue":"Segure o tronco parado. Excelente para lombar.","bodyWeightLevel":"baixo"}
+      ]
+    },
+    {
+      "code":"C",
+      "name":"C • Pernas + glúteos + core",
+      "focus":"Pernas completas, glúteos e core sem judiar da lombar.",
+      "warmup":"Esteira: 5–8 min leve antes para aquecer; cardio principal depois das máquinas.",
+      "list":[
+        {"id":"c_leg_press_01","name":"Leg press 45°","type":"Máquina Smart","group":"Pernas","machine":"01","alt":"Extensora 08","keywords":["leg press","legpress","pernas","quadriceps"],"muscles":["Quadríceps","Glúteos","Posterior"],"sets":4,"reps":"8–12","rest":90,"cue":"Pés firmes. Não desça a ponto de tirar a lombar do banco.","bodyWeightLevel":"baixo"},
+        {"id":"c_flexora_10","name":"Mesa flexora","type":"Máquina Smart","group":"Pernas","machine":"10","alt":"Flexora equivalente","keywords":["flexora","leg curl","posterior coxa"],"muscles":["Posterior de coxa","Glúteos"],"sets":3,"reps":"10–12","rest":75,"cue":"Suba controlando. Não deixe o quadril levantar.","bodyWeightLevel":"baixo"},
+        {"id":"c_extensora_08","name":"Cadeira extensora","type":"Máquina Smart","group":"Pernas","machine":"08","alt":"Extensora unilateral","keywords":["extensora","leg extension","quadriceps"],"muscles":["Quadríceps"],"sets":3,"reps":"10–12","rest":75,"cue":"Subir com controle. Sem chutar.","bodyWeightLevel":"baixo"},
+        {"id":"c_gluteo_06","name":"Glúteo máquina","type":"Máquina Smart","group":"Pernas","machine":"06","alt":"Abdutora 04","keywords":["gluteo","glúteo","kickback","coice"],"muscles":["Glúteos","Posterior"],"sets":3,"reps":"10–12 cada perna","rest":75,"cue":"Movimento controlado. Evite compensar na lombar.","bodyWeightLevel":"baixo"},
+        {"id":"c_abdutora_04","name":"Cadeira abdutora","type":"Máquina Smart","group":"Pernas","machine":"04","alt":"Glúteo máquina 06","keywords":["abdutora","abduction","gluteo medio"],"muscles":["Glúteo médio","Glúteos"],"sets":3,"reps":"12–15","rest":60,"cue":"Segure 1s aberto. Não use impulso.","bodyWeightLevel":"baixo"},
+        {"id":"c_adutora_05","name":"Cadeira adutora","type":"Máquina Smart","group":"Pernas","machine":"05","alt":"Adutora equivalente","keywords":["adutora","adduction","adutores"],"muscles":["Adutores","Coxa interna"],"sets":3,"reps":"12–15","rest":60,"cue":"Controle na volta. Sem bater placas.","bodyWeightLevel":"baixo"},
+        {"id":"c_panturrilha_pendente","name":"Panturrilha máquina","type":"Máquina pendente","group":"Pernas","machine":"A conferir","alt":"Panturrilha no leg press","keywords":["panturrilha","calf raise","gemeos"],"muscles":["Panturrilhas"],"sets":3,"reps":"12–15","rest":60,"cue":"Número da máquina ainda pendente. Ajuste quando confirmar.","bodyWeightLevel":"baixo"},
+        {"id":"c_core_lombar_40","name":"Core/lombar leve","type":"Máquina Smart","group":"Core","machine":"40","alt":"Dead bug leve","keywords":["lombar","abdomen lombar","core","lower back"],"muscles":["Core","Lombar"],"sets":2,"reps":"10–12","rest":60,"cue":"Só leve e controlado. Se lombar reclamar, pule.","bodyWeightLevel":"baixo"}
+      ]
+    }
+  ]
+}

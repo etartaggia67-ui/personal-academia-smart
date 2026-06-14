@@ -1,0 +1,10 @@
+Coloque aqui GIFs, WebP, PNG ou JPG com nomes claros.
+Exemplos:
+- supino-articulado.gif
+- puxada-alta.gif
+- remada-baixa.gif
+- leg-press.gif
+- flexora.gif
+- extensora.gif
+
+Depois, edite assets/manifest.json ou use o importador de GIFs dentro do app.

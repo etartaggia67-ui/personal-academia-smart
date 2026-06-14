@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#041016">
+<title>Personal Academia Smart V14</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="assets/icons/icon-192.png">
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="top">
+      <div class="brand">
+        <div class="logo">V</div>
+        <div class="brandText">
+          <h1>Personal Academia Smart</h1>
+          <div class="sub">V14.0 • PWA offline • Treino visual</div>
+        </div>
+      </div>
+      <div class="actions">
+        <a id="spotifyBtn" class="iconbtn spotify" target="_blank" rel="noopener" href="https://open.spotify.com/search/treino%20academia%20energia" title="Spotify">≋</a>
+        <button class="iconbtn" type="button" id="btnExportTop" title="Exportar backup">⇩</button>
+        <label class="iconbtn" title="Importar backup">⇧<input id="importBackupFileTop" type="file" accept="application/json" hidden></label>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="screen-painel" class="screen active">
+      <div class="card hero">
+        <div class="kicker">Próximo treino</div>
+        <div id="nextWorkoutTitle" class="bigTitle">--</div>
+        <p id="nextWorkoutFocus" class="lead">Carregando plano offline.</p>
+        <div class="chipRow">
+          <span id="exerciseCountPill" class="pill teal">-- exercícios</span>
+          <span class="pill warn">~90 min</span>
+          <span class="pill">quarta descanso</span>
+        </div>
+        <div class="notice"><b>Esteira:</b> 5–8 min leve antes para aquecer; cardio principal depois das máquinas.</div>
+        <div class="quickSelect">
+          <div><label>Energia hoje</label><select id="energySelect"><option value="baixa">Baixa</option><option value="normal">Normal</option><option value="boa">Boa</option></select></div>
+          <div><label>Lombar hoje</label><select id="backSelect"><option value="ok">Ok</option><option value="sensivel">Sensível</option><option value="ruim">Ruim</option></select></div>
+        </div>
+        <div class="row mainActions">
+          <button id="btnStartWorkout" type="button">▶ Iniciar treino</button>
+          <button id="btnSkipWorkout" type="button" class="secondary">⏭ Pular treino</button>
+          <button id="btnRestDay" type="button" class="secondary wide">☕ Descanso hoje</button>
+        </div>
+        <div id="panelStatus" class="buttonStatus">Pronto para treinar.</div>
+      </div>
+
+      <div class="card compact">
+        <h2>Resumo rápido</h2>
+        <div id="quickSummary" class="metricList"></div>
+      </div>
+
+      <div class="card compact">
+        <h2>Suplementos</h2>
+        <p class="lead">Whey pós-treino ou colação. Creatina diária. Evitar termogênicos/estimulantes fortes.</p>
+      </div>
+    </section>
+
+    <section id="screen-treino" class="screen">
+      <div id="workoutHeader" class="card workoutHeader"></div>
+      <div id="exerciseList"></div>
+      <div class="card compact"><button id="btnFinishWorkout" type="button" class="wide">✅ Finalizar treino do dia</button></div>
+    </section>
+
+    <section id="screen-medidas" class="screen">
+      <div class="card">
+        <h2>Medidas</h2>
+        <p class="lead">Dados ficam no celular. Exporte o JSON de tempos em tempos.</p>
+        <div class="grid2">
+          <div><label>Data</label><input id="medData" type="date"></div>
+          <div><label>Peso (kg)</label><input id="medPeso" inputmode="decimal" placeholder="78"></div>
+          <div><label>Cintura</label><input id="cintura" inputmode="decimal"></div>
+          <div><label>Quadril</label><input id="quadril" inputmode="decimal"></div>
+          <div><label>Abdômen</label><input id="abdomen" inputmode="decimal"></div>
+          <div><label>Panturrilha</label><input id="panturrilha" inputmode="decimal"></div>
+        </div>
+        <button id="btnAddMeasure" type="button" class="wide">Salvar medida</button>
+      </div>
+      <div class="card"><h2>Histórico</h2><div id="measureTable"></div></div>
+    </section>
+
+    <section id="screen-config" class="screen">
+      <div class="card">
+        <h2>Config</h2>
+        <div class="grid2">
+          <div><label>Link Spotify</label><input id="spotifyUrl" type="url" value="https://open.spotify.com/search/treino%20academia%20energia"></div>
+          <div><label>Feedback dos botões</label><select id="feedbackMode"><option value="vibra_som">Vibração + som</option><option value="vibra">Só vibração</option><option value="visual">Só visual</option></select></div>
+          <div><label>Descanso padrão (s)</label><input id="defaultRest" inputmode="numeric" value="90"></div>
+          <div><label>Peso atual padrão</label><input id="defaultWeight" inputmode="decimal" value="78"></div>
+        </div>
+        <button id="btnSaveConfig" type="button" class="wide">Salvar configurações</button>
+      </div>
+
+      <div class="card">
+        <h2>GIFs e imagens</h2>
+        <p class="lead">Importe GIFs/WebP/PNG/JPG do celular. O app associa pelo nome do arquivo aos exercícios.</p>
+        <label class="fileButton">📁 Importar GIFs/imagens<input id="assetImport" type="file" accept="image/gif,image/webp,image/png,image/jpeg" multiple hidden></label>
+        <div id="assetStatus" class="buttonStatus">Nenhum asset importado ainda.</div>
+        <button id="btnClearAssets" type="button" class="secondary wide">Limpar GIFs importados</button>
+        <p class="small">Também dá para hospedar arquivos na pasta <b>assets/gifs</b> e listar em <b>assets/manifest.json</b>.</p>
+      </div>
+
+      <div class="card">
+        <h2>Backup</h2>
+        <div class="row">
+          <button id="btnExport" type="button">Exportar JSON</button>
+          <label class="fileButton secondary">Importar JSON<input id="importBackupFile" type="file" accept="application/json" hidden></label>
+        </div>
+        <button id="btnClearLocal" type="button" class="danger wide">Apagar dados locais</button>
+        <div id="saveStatus" class="buttonStatus">Modo PWA local.</div>
+      </div>
+
+      <div class="card">
+        <h2>Mapa Smart Fit Tarumã</h2>
+        <div id="machineMap"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottomNav">
+    <button type="button" class="navbtn active" data-screen="painel"><span>⌂</span><b>Painel</b></button>
+    <button type="button" class="navbtn" data-screen="treino"><span>🏋️</span><b>Treino</b></button>
+    <button type="button" class="navbtn" data-screen="medidas"><span>📏</span><b>Medidas</b></button>
+    <button type="button" class="navbtn" data-screen="config"><span>⚙️</span><b>Config</b></button>
+  </nav>
+  <div id="toast" class="toast"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
