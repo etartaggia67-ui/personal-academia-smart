@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111827" />
-  <title>Personal Academia Smart V14.3</title>
+  <title>Personal Academia Smart V14.4</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -12,8 +12,8 @@
   <header class="app-header">
     <div>
       <p class="eyebrow">Personal Academia Smart</p>
-      <h1>V14.3</h1>
-      <p class="muted">Sequência eficaz · hipertrofia natural · evolução mensurável</p>
+      <h1>V14.4</h1>
+      <p class="muted">Sequência eficaz · GIFs automáticos · layout compacto</p>
     </div>
     <button id="installBtn" class="ghost hidden" type="button">Instalar</button>
   </header>
@@ -71,22 +71,25 @@
             <div id="gifPlaceholder" class="gif-placeholder">GIF ainda não importado</div>
           </div>
 
-          <p class="hint" id="gifSuggestion"></p>
+          <details class="gif-tools">
+            <summary>GIF e cache</summary>
+            <p class="hint" id="gifSuggestion"></p>
+            <div class="actions grid-2 compact-actions">
+              <label class="secondary file-label">
+                Trocar GIF manualmente
+                <input id="gifInput" type="file" accept="image/gif,image/*" />
+              </label>
+              <button id="removeGifBtn" class="ghost" type="button">Remover manual</button>
+            </div>
+          </details>
 
-          <div class="actions grid-2">
-            <label class="secondary file-label">
-              Importar GIF deste exercício
-              <input id="gifInput" type="file" accept="image/gif,image/*" />
-            </label>
-            <button id="removeGifBtn" class="ghost" type="button">Remover GIF</button>
-          </div>
-
-          <details class="attention" open>
+          <details class="attention">
             <summary>Pontos de atenção</summary>
             <p id="exerciseAttention"></p>
           </details>
 
-          <div class="load-card">
+          <details class="load-card">
+            <summary>Carga e observações</summary>
             <div class="form-grid compact">
               <label>Carga usada
                 <input id="loadInput" type="number" inputmode="decimal" step="0.5" min="0" placeholder="kg" />
@@ -98,11 +101,11 @@
             <label>Observação rápida
               <input id="exerciseNoteInput" type="text" placeholder="ex.: subir 2,5 kg na próxima" />
             </label>
-            <div class="actions grid-2">
+            <div class="actions grid-2 compact-actions">
               <button id="savePerformanceBtn" class="secondary" type="button">Salvar carga</button>
               <button id="clearPerformanceBtn" class="ghost" type="button">Limpar</button>
             </div>
-          </div>
+          </details>
 
           <div class="timer">
             <div class="timer-display" id="timerDisplay">01:30</div>
@@ -233,7 +236,7 @@
 
   <footer class="footer">
     <button id="resetBtn" class="linklike" type="button">Resetar sequência</button>
-    <span>V14.3 PWA · GitHub Pages</span>
+    <span>V14.4 PWA · GitHub Pages</span>
   </footer>
 
   <script src="app.js" type="module"></script>

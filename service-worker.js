@@ -1,4 +1,5 @@
-const CACHE_NAME = 'personal-academia-smart-v14-3-cache-v1';
+const STATIC_CACHE = 'personal-academia-smart-v14-4-static-v1';
+const REMOTE_GIF_CACHE = 'pas_v144_remote_gifs';
 const ASSETS = [
   './',
   './index.html',
@@ -11,13 +12,16 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+  event.waitUntil(caches.open(STATIC_CACHE).then(cache => cache.addAll(ASSETS)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.map(key => key !== CACHE_NAME ? caches.delete(key) : null)))
+    caches.keys().then(keys => Promise.all(keys.map(key => {
+      const keep = key === STATIC_CACHE || key === REMOTE_GIF_CACHE;
+      return keep ? null : caches.delete(key);
+    })))
   );
   self.clients.claim();
 });
@@ -25,13 +29,42 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  const isRemoteGif =
+    url.hostname.includes('drive.google.com') ||
+    url.hostname.includes('googleusercontent.com');
+
+  if (isRemoteGif) {
+    event.respondWith(cacheFirstRemoteGif(request));
+    return;
+  }
+
   event.respondWith(
     fetch(request)
       .then(response => {
         const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+        caches.open(STATIC_CACHE).then(cache => cache.put(request, copy));
         return response;
       })
       .catch(() => caches.match(request).then(cached => cached || caches.match('./index.html')))
   );
 });
+
+async function cacheFirstRemoteGif(request) {
+  const cache = await caches.open(REMOTE_GIF_CACHE);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(request);
+    if (response && (response.ok || response.type === 'opaque')) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    const fallback = await cache.match(request.url);
+    if (fallback) return fallback;
+    throw error;
+  }
+}

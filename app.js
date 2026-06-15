@@ -1,6 +1,7 @@
-const STATE_KEY = 'pas_v143_state';
-const DB_NAME = 'pas_v143_gifs';
+const STATE_KEY = 'pas_v144_state';
+const DB_NAME = 'pas_v144_gifs';
 const DB_STORE = 'gifs';
+const REMOTE_GIF_CACHE = 'pas_v144_remote_gifs';
 
 let data;
 let state;
@@ -23,6 +24,7 @@ async function init() {
   setToday();
   renderHome();
   renderMeasures();
+  scheduleInitialGifCache();
 }
 
 function defaultState() {
@@ -140,6 +142,8 @@ function startWorkout(id) {
   $('workoutTitle').textContent = currentWorkout.title;
   $('workoutSubtitle').textContent = currentWorkout.subtitle;
   renderExercise();
+  preloadGifsForWorkout(id);
+  preloadGifsForWorkout(nextId(id));
   $('workoutPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -156,14 +160,14 @@ async function renderExercise() {
   const ex = currentExercise();
   $('exerciseProgress').textContent = `Exercício ${currentExerciseIndex + 1}/${currentWorkout.exercises.length}`;
   $('exerciseName').textContent = ex.name;
-  $('exerciseMeta').textContent = `${ex.sets} séries · ${ex.reps} · descanso ${ex.rest || 90}s · ${ex.group}`;
+  $('exerciseMeta').textContent = `${ex.sets} séries · ${ex.reps} · ${ex.group}`;
   $('exerciseMachine').textContent = ex.machine;
-  $('gifSuggestion').textContent = `GIF sugerido: ${ex.gifSuggestion || 'não definido'}`;
   $('exerciseAttention').textContent = ex.attention || 'Execute com controle, amplitude confortável e técnica estável.';
   $('alternativesList').innerHTML = (ex.alternatives || []).map(a => `<li>${a}</li>`).join('');
   loadPerformance(ex.id);
   resetTimer(ex.rest || 90);
-  await loadGifForExercise(ex.id);
+  await loadGifForExercise(ex);
+  cacheGifForExercise(ex);
 }
 
 function moveExercise(delta) {
@@ -278,21 +282,101 @@ async function removeCurrentGif() {
   await loadGifForExercise(currentExercise().id);
 }
 
-async function loadGifForExercise(exerciseId) {
+async function loadGifForExercise(exerciseOrId) {
+  const ex = typeof exerciseOrId === 'object' ? exerciseOrId : currentExercise();
+  const exerciseId = typeof exerciseOrId === 'string' ? exerciseOrId : ex.id;
   const record = await getGif(exerciseId);
   const img = $('exerciseGif');
   const placeholder = $('gifPlaceholder');
-  if (!record?.blob) {
-    img.classList.add('hidden');
-    img.removeAttribute('src');
-    placeholder.classList.remove('hidden');
+  const autoUrl = gifUrlForExercise(ex);
+
+  img.onload = null;
+  img.onerror = null;
+  img.classList.add('hidden');
+  img.removeAttribute('src');
+  placeholder.classList.remove('hidden');
+
+  if (record?.blob) {
+    const url = URL.createObjectURL(record.blob);
+    img.onload = () => URL.revokeObjectURL(url);
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      img.classList.add('hidden');
+      placeholder.textContent = 'GIF manual não carregou';
+      placeholder.classList.remove('hidden');
+    };
+    placeholder.textContent = 'Carregando GIF manual…';
+    img.src = url;
+    img.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+    $('gifSuggestion').textContent = `GIF manual salvo neste aparelho. Sugestão original: ${ex.gifFile || ex.gifSuggestion || 'não definida'}.`;
     return;
   }
-  const url = URL.createObjectURL(record.blob);
-  img.onload = () => URL.revokeObjectURL(url);
-  img.src = url;
-  img.classList.remove('hidden');
-  placeholder.classList.add('hidden');
+
+  if (autoUrl) {
+    placeholder.textContent = 'Carregando GIF automático…';
+    img.onload = () => {
+      placeholder.classList.add('hidden');
+      img.classList.remove('hidden');
+    };
+    img.onerror = () => {
+      img.classList.add('hidden');
+      img.removeAttribute('src');
+      placeholder.textContent = 'GIF automático não carregou. Use “Trocar GIF manualmente”.';
+      placeholder.classList.remove('hidden');
+    };
+    img.src = autoUrl;
+    img.classList.remove('hidden');
+    $('gifSuggestion').textContent = `GIF automático: ${ex.gifFile || ex.gifSuggestion}. Cache inicial será feito quando houver conexão.`;
+    return;
+  }
+
+  placeholder.textContent = 'GIF pendente';
+  $('gifSuggestion').textContent = ex.gifSuggestion && !String(ex.gifSuggestion).toLowerCase().includes('sem gif')
+    ? `Sugestão: ${ex.gifSuggestion}`
+    : 'Sem GIF automático para este exercício. Pode importar manualmente quando quiser.';
+}
+
+function gifUrlForExercise(ex) {
+  if (!ex) return '';
+  if (ex.gifUrl) return ex.gifUrl;
+  if (ex.gifDriveId) return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(ex.gifDriveId)}`;
+  return '';
+}
+
+function gifCacheRequest(url) {
+  return new Request(url, { mode: 'no-cors', cache: 'force-cache' });
+}
+
+async function cacheGifForExercise(ex) {
+  const url = gifUrlForExercise(ex);
+  if (!url || !('caches' in window) || !navigator.onLine) return false;
+  try {
+    const cache = await caches.open(REMOTE_GIF_CACHE);
+    const req = gifCacheRequest(url);
+    const cached = await cache.match(req);
+    if (cached) return true;
+    const response = await fetch(req);
+    await cache.put(req, response.clone());
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+async function preloadGifsForWorkout(workoutId) {
+  if (!('caches' in window) || !navigator.onLine) return;
+  const workout = getWorkout(workoutId);
+  if (!workout?.exercises?.length) return;
+  for (const ex of workout.exercises) {
+    await cacheGifForExercise(ex);
+  }
+}
+
+function scheduleInitialGifCache() {
+  window.setTimeout(() => {
+    preloadGifsForWorkout(state.nextWorkoutId);
+  }, 1200);
 }
 
 function openDb() {
@@ -515,7 +599,7 @@ function clearMeasures() {
 function exportMeasures() {
   const payload = {
     app: 'Personal Academia Smart',
-    version: '14.3',
+    version: '14.4',
     exportedAt: new Date().toISOString(),
     profile: state.profile,
     measures: state.measures,
@@ -526,7 +610,7 @@ function exportMeasures() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'personal-academia-smart-v14.3-dados.json';
+  a.download = 'personal-academia-smart-v14.4-dados.json';
   a.click();
   URL.revokeObjectURL(url);
 }

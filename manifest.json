@@ -1,7 +1,7 @@
 {
   "name": "Personal Academia Smart",
   "short_name": "Personal Smart",
-  "description": "Treino sequencial, GIFs importados, medidas, IMC e evolução.",
+  "description": "Treino sequencial, GIFs automáticos em cache, medidas, IMC e evolução.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0b1020",
