@@ -1,6 +1,7 @@
-const STATE_KEY = 'pas_v142_state';
-const DB_NAME = 'pas_v142_gifs';
+const STATE_KEY = 'pas_v143_state';
+const DB_NAME = 'pas_v143_gifs';
 const DB_STORE = 'gifs';
+
 let data;
 let state;
 let currentWorkout;
@@ -19,13 +20,38 @@ async function init() {
   data = await fetch('data/workouts.json', { cache: 'no-store' }).then(r => r.json());
   state = loadState();
   bindEvents();
+  setToday();
   renderHome();
+  renderMeasures();
+}
+
+function defaultState() {
+  return {
+    nextWorkoutId: 'A',
+    lastDone: null,
+    restDays: [],
+    completed: [],
+    performances: {},
+    profile: {
+      heightCm: data?.defaultProfile?.heightCm || 168,
+      idealGoalKg: data?.defaultProfile?.idealGoalKg || 70,
+      realGoalKg: data?.defaultProfile?.realGoalKg || 75
+    },
+    measures: []
+  };
 }
 
 function loadState() {
-  const fallback = { nextWorkoutId: 'A', lastDone: null, restDays: [], completed: [] };
+  const fallback = defaultState();
   try {
-    return { ...fallback, ...(JSON.parse(localStorage.getItem(STATE_KEY)) || {}) };
+    const saved = JSON.parse(localStorage.getItem(STATE_KEY)) || {};
+    return {
+      ...fallback,
+      ...saved,
+      profile: { ...fallback.profile, ...(saved.profile || {}) },
+      measures: Array.isArray(saved.measures) ? saved.measures : [],
+      performances: saved.performances || {}
+    };
   } catch (_) {
     return fallback;
   }
@@ -68,6 +94,9 @@ function renderHome() {
 }
 
 function bindEvents() {
+  $('tabWorkout').addEventListener('click', () => showTab('workout'));
+  $('tabMeasures').addEventListener('click', () => showTab('measures'));
+
   $('startBtn').addEventListener('click', () => startWorkout(state.nextWorkoutId));
   $('nextBtn').addEventListener('click', () => setNextWorkout(nextId(state.nextWorkoutId)));
   $('prevBtn').addEventListener('click', () => setNextWorkout(prevId(state.nextWorkoutId)));
@@ -84,6 +113,22 @@ function bindEvents() {
   $('timer45Btn').addEventListener('click', () => startTimer(45));
   $('timerResetBtn').addEventListener('click', () => resetTimer(currentExercise().rest || 90));
   $('resetBtn').addEventListener('click', resetSequence);
+  $('savePerformanceBtn').addEventListener('click', savePerformance);
+  $('clearPerformanceBtn').addEventListener('click', clearPerformance);
+
+  $('measureForm').addEventListener('submit', saveMeasure);
+  $('clearMeasureFormBtn').addEventListener('click', clearMeasureForm);
+  $('clearMeasuresBtn').addEventListener('click', clearMeasures);
+  $('exportMeasuresBtn').addEventListener('click', exportMeasures);
+}
+
+function showTab(tab) {
+  const workout = tab === 'workout';
+  $('workoutTabPanel').classList.toggle('hidden', !workout);
+  $('measuresTabPanel').classList.toggle('hidden', workout);
+  $('tabWorkout').classList.toggle('active', workout);
+  $('tabMeasures').classList.toggle('active', !workout);
+  if (!workout) renderMeasures();
 }
 
 function startWorkout(id) {
@@ -114,7 +159,9 @@ async function renderExercise() {
   $('exerciseMeta').textContent = `${ex.sets} séries · ${ex.reps} · descanso ${ex.rest || 90}s · ${ex.group}`;
   $('exerciseMachine').textContent = ex.machine;
   $('gifSuggestion').textContent = `GIF sugerido: ${ex.gifSuggestion || 'não definido'}`;
+  $('exerciseAttention').textContent = ex.attention || 'Execute com controle, amplitude confortável e técnica estável.';
   $('alternativesList').innerHTML = (ex.alternatives || []).map(a => `<li>${a}</li>`).join('');
+  loadPerformance(ex.id);
   resetTimer(ex.rest || 90);
   await loadGifForExercise(ex.id);
 }
@@ -153,6 +200,32 @@ function resetSequence() {
   renderHome();
 }
 
+function loadPerformance(exerciseId) {
+  const p = state.performances?.[exerciseId] || {};
+  $('loadInput').value = p.load ?? '';
+  $('repsInput').value = p.reps ?? '';
+  $('exerciseNoteInput').value = p.note ?? '';
+}
+
+function savePerformance() {
+  const ex = currentExercise();
+  state.performances[ex.id] = {
+    load: $('loadInput').value.trim(),
+    reps: $('repsInput').value.trim(),
+    note: $('exerciseNoteInput').value.trim(),
+    updatedAt: new Date().toISOString()
+  };
+  saveState();
+  vibrate(80);
+}
+
+function clearPerformance() {
+  const ex = currentExercise();
+  delete state.performances[ex.id];
+  saveState();
+  loadPerformance(ex.id);
+}
+
 function resetTimer(seconds) {
   stopTimer();
   timerRemaining = seconds;
@@ -168,7 +241,7 @@ function startTimer(seconds) {
     renderTimer();
     if (timerRemaining <= 0) {
       stopTimer();
-      vibrate();
+      vibrate([180, 80, 180]);
     }
   }, 1000);
 }
@@ -179,12 +252,17 @@ function stopTimer() {
 }
 
 function renderTimer() {
-  const s = Math.max(0, timerRemaining);
-  $('timerDisplay').textContent = `00:${String(s).padStart(2, '0')}`;
+  $('timerDisplay').textContent = formatSeconds(Math.max(0, timerRemaining));
 }
 
-function vibrate() {
-  if ('vibrate' in navigator) navigator.vibrate([180, 80, 180]);
+function formatSeconds(total) {
+  const minutes = Math.floor(total / 60);
+  const seconds = total % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function vibrate(pattern = 120) {
+  if ('vibrate' in navigator) navigator.vibrate(pattern);
 }
 
 async function importGif(event) {
@@ -254,6 +332,203 @@ async function deleteGif(id) {
     tx.oncomplete = resolve;
     tx.onerror = () => reject(tx.error);
   });
+}
+
+function setToday() {
+  const today = new Date().toISOString().slice(0, 10);
+  $('measureDate').value = today;
+}
+
+function getNumber(id) {
+  const value = $(id).value;
+  if (value === '' || value == null) return null;
+  const parsed = Number(String(value).replace(',', '.'));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function setProfileInputs() {
+  $('heightCm').value = state.profile.heightCm ?? '';
+  $('realGoalKg').value = state.profile.realGoalKg ?? '';
+  $('idealGoalKg').value = state.profile.idealGoalKg ?? '';
+}
+
+function clearMeasureForm() {
+  $('measureWeight').value = '';
+  ['waistCm','abdomenCm','hipCm','chestCm','bicepsRelaxedCm','bicepsFlexedCm','forearmCm','thighCm','calfCm','measureNotes'].forEach(id => $(id).value = '');
+  setToday();
+  setProfileInputs();
+}
+
+function saveMeasure(event) {
+  event.preventDefault();
+  const weight = getNumber('measureWeight');
+  if (!weight) return alert('Informe o peso atual.');
+
+  state.profile.heightCm = getNumber('heightCm') || state.profile.heightCm;
+  state.profile.realGoalKg = getNumber('realGoalKg') || state.profile.realGoalKg;
+  state.profile.idealGoalKg = getNumber('idealGoalKg') || state.profile.idealGoalKg;
+
+  const entry = {
+    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    date: $('measureDate').value || new Date().toISOString().slice(0, 10),
+    weightKg: weight,
+    waistCm: getNumber('waistCm'),
+    abdomenCm: getNumber('abdomenCm'),
+    hipCm: getNumber('hipCm'),
+    chestCm: getNumber('chestCm'),
+    bicepsRelaxedCm: getNumber('bicepsRelaxedCm'),
+    bicepsFlexedCm: getNumber('bicepsFlexedCm'),
+    forearmCm: getNumber('forearmCm'),
+    thighCm: getNumber('thighCm'),
+    calfCm: getNumber('calfCm'),
+    notes: $('measureNotes').value.trim(),
+    createdAt: new Date().toISOString()
+  };
+
+  state.measures.push(entry);
+  state.measures.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  saveState();
+  clearMeasureForm();
+  renderMeasures();
+  vibrate(80);
+}
+
+function latestMeasure() {
+  return [...state.measures].sort((a, b) => String(b.date).localeCompare(String(a.date)))[0] || null;
+}
+
+function firstMeasure() {
+  return [...state.measures].sort((a, b) => String(a.date).localeCompare(String(b.date)))[0] || null;
+}
+
+function calcBmi(weightKg, heightCm) {
+  if (!weightKg || !heightCm) return null;
+  const m = heightCm / 100;
+  return weightKg / (m * m);
+}
+
+function bmiLabel(bmi) {
+  if (!bmi) return '—';
+  if (bmi < 18.5) return 'baixo';
+  if (bmi < 25) return 'adequado';
+  if (bmi < 30) return 'sobrepeso';
+  return 'obesidade';
+}
+
+function kgText(value) {
+  if (value == null || Number.isNaN(value)) return '—';
+  const sign = value > 0 ? '-' : '+';
+  return `${sign}${Math.abs(value).toFixed(1)} kg`;
+}
+
+function renderMeasures() {
+  setProfileInputs();
+  const latest = latestMeasure();
+  const first = firstMeasure();
+  const height = state.profile.heightCm;
+  const realGoal = state.profile.realGoalKg;
+  const idealGoal = state.profile.idealGoalKg;
+
+  if (!latest) {
+    $('measureHeadline').textContent = 'Sem registro ainda';
+    $('measureSubtitle').textContent = 'Registre o primeiro peso para calcular IMC, metas e evolução.';
+    $('bmiValue').textContent = '—';
+    $('realGoalInfo').textContent = realGoal ? `${realGoal} kg` : '—';
+    $('idealGoalInfo').textContent = idealGoal ? `${idealGoal} kg` : '—';
+    $('realProgressLabel').textContent = '—';
+    $('realProgressBar').style.width = '0%';
+    renderMeasureHistory();
+    return;
+  }
+
+  const bmi = calcBmi(latest.weightKg, height);
+  const delta = first && first.id !== latest.id ? latest.weightKg - first.weightKg : 0;
+  const toReal = latest.weightKg - realGoal;
+  const toIdeal = latest.weightKg - idealGoal;
+
+  $('measureHeadline').textContent = `${latest.weightKg.toFixed(1)} kg · ${formatDate(latest.date)}`;
+  $('measureSubtitle').textContent = `Evolução desde o primeiro registro: ${delta === 0 ? 'sem variação ainda' : `${delta > 0 ? '+' : ''}${delta.toFixed(1)} kg`}.`;
+  $('bmiValue').textContent = bmi ? `${bmi.toFixed(1)} · ${bmiLabel(bmi)}` : '—';
+  $('realGoalInfo').textContent = realGoal ? `${kgText(toReal)} até ${realGoal} kg` : '—';
+  $('idealGoalInfo').textContent = idealGoal ? `${kgText(toIdeal)} até ${idealGoal} kg` : '—';
+
+  const start = first?.weightKg || latest.weightKg;
+  const totalToLose = Math.max(0.1, start - realGoal);
+  const lost = Math.max(0, start - latest.weightKg);
+  const progress = Math.max(0, Math.min(100, (lost / totalToLose) * 100));
+  $('realProgressLabel').textContent = `${progress.toFixed(0)}%`;
+  $('realProgressBar').style.width = `${progress}%`;
+  renderMeasureHistory();
+}
+
+function renderMeasureHistory() {
+  const box = $('measureHistory');
+  if (!state.measures.length) {
+    box.className = 'history empty';
+    box.textContent = 'Nenhuma medida registrada.';
+    return;
+  }
+  box.className = 'history';
+  const ordered = [...state.measures].sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 12);
+  box.innerHTML = ordered.map(m => {
+    const bmi = calcBmi(m.weightKg, state.profile.heightCm);
+    const metrics = [
+      ['Peso', `${m.weightKg.toFixed(1)} kg`],
+      ['IMC', bmi ? bmi.toFixed(1) : '—'],
+      ['Cintura', valueCm(m.waistCm)],
+      ['Abdômen', valueCm(m.abdomenCm)],
+      ['Quadril', valueCm(m.hipCm)],
+      ['Coxa', valueCm(m.thighCm)]
+    ];
+    return `
+      <article class="history-item">
+        <div class="history-top"><strong>${formatDate(m.date)}</strong><span class="badge">${m.weightKg.toFixed(1)} kg</span></div>
+        <div class="history-grid">${metrics.map(([k,v]) => `<span>${k}: <strong>${v}</strong></span>`).join('')}</div>
+        ${m.notes ? `<p class="muted">${escapeHtml(m.notes)}</p>` : ''}
+      </article>
+    `;
+  }).join('');
+}
+
+function valueCm(value) {
+  return value ? `${Number(value).toFixed(1)} cm` : '—';
+}
+
+function formatDate(date) {
+  if (!date) return '—';
+  const [y, m, d] = String(date).split('-');
+  return y && m && d ? `${d}/${m}/${y}` : date;
+}
+
+function escapeHtml(text) {
+  return String(text).replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
+}
+
+function clearMeasures() {
+  if (!state.measures.length) return;
+  if (!confirm('Apagar todo o histórico de medidas?')) return;
+  state.measures = [];
+  saveState();
+  renderMeasures();
+}
+
+function exportMeasures() {
+  const payload = {
+    app: 'Personal Academia Smart',
+    version: '14.3',
+    exportedAt: new Date().toISOString(),
+    profile: state.profile,
+    measures: state.measures,
+    completed: state.completed,
+    performances: state.performances
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'personal-academia-smart-v14.3-dados.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function registerServiceWorker() {

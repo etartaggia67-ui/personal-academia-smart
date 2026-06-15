@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111827" />
-  <title>Personal Academia Smart V14.2</title>
+  <title>Personal Academia Smart V14.3</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -12,104 +12,228 @@
   <header class="app-header">
     <div>
       <p class="eyebrow">Personal Academia Smart</p>
-      <h1>V14.2</h1>
-      <p class="muted">Sequência de treino, não calendário.</p>
+      <h1>V14.3</h1>
+      <p class="muted">Sequência eficaz · hipertrofia natural · evolução mensurável</p>
     </div>
     <button id="installBtn" class="ghost hidden" type="button">Instalar</button>
   </header>
 
+  <nav class="tabs" aria-label="Navegação principal">
+    <button id="tabWorkout" class="tab active" type="button">Treino</button>
+    <button id="tabMeasures" class="tab" type="button">Medidas</button>
+  </nav>
+
   <main class="shell">
-    <section class="card hero">
-      <div>
-        <p class="eyebrow">Próximo treino</p>
-        <h2 id="nextWorkoutTitle">Carregando…</h2>
-        <p id="nextWorkoutSubtitle" class="muted"></p>
-      </div>
-      <div class="sequence" id="sequencePills"></div>
-      <div class="actions grid-2">
-        <button id="startBtn" class="primary" type="button">Iniciar treino</button>
-        <button id="nextBtn" class="secondary" type="button">Próximo treino</button>
-        <button id="prevBtn" class="secondary" type="button">Treino anterior</button>
-        <button id="restBtn" class="ghost" type="button">Dia de descanso</button>
-      </div>
-    </section>
-
-    <section class="card stats">
-      <div><span class="label">Último concluído</span><strong id="lastDone">Nenhum</strong></div>
-      <div><span class="label">Modo</span><strong>Sequência</strong></div>
-      <div><span class="label">Descanso padrão</span><strong>90s</strong></div>
-    </section>
-
-    <section class="card workout hidden" id="workoutPanel">
-      <div class="workout-head">
+    <section id="workoutTabPanel" class="tab-panel">
+      <section class="card hero">
         <div>
-          <p class="eyebrow" id="workoutId">Treino</p>
-          <h2 id="workoutTitle"></h2>
-          <p id="workoutSubtitle" class="muted"></p>
+          <p class="eyebrow">Próximo treino</p>
+          <h2 id="nextWorkoutTitle">Carregando…</h2>
+          <p id="nextWorkoutSubtitle" class="muted"></p>
         </div>
-        <button id="closeWorkoutBtn" class="ghost" type="button">Fechar</button>
-      </div>
-
-      <div class="exercise-card">
-        <div class="exercise-top">
-          <div>
-            <p class="eyebrow" id="exerciseProgress">Exercício 1/7</p>
-            <h3 id="exerciseName"></h3>
-            <p class="muted" id="exerciseMeta"></p>
-          </div>
-          <div class="machine" id="exerciseMachine"></div>
-        </div>
-
-        <div class="gif-box" id="gifBox">
-          <img id="exerciseGif" class="hidden" alt="GIF do exercício" />
-          <div id="gifPlaceholder" class="gif-placeholder">GIF ainda não importado</div>
-        </div>
-
-        <p class="hint" id="gifSuggestion"></p>
-
+        <div class="sequence" id="sequencePills"></div>
         <div class="actions grid-2">
-          <label class="secondary file-label">
-            Importar GIF deste exercício
-            <input id="gifInput" type="file" accept="image/gif,image/*" />
-          </label>
-          <button id="removeGifBtn" class="ghost" type="button">Remover GIF</button>
+          <button id="startBtn" class="primary" type="button">Iniciar treino</button>
+          <button id="nextBtn" class="secondary" type="button">Próximo treino</button>
+          <button id="prevBtn" class="secondary" type="button">Treino anterior</button>
+          <button id="restBtn" class="ghost" type="button">Dia de descanso</button>
+        </div>
+      </section>
+
+      <section class="card stats">
+        <div><span class="label">Último concluído</span><strong id="lastDone">Nenhum</strong></div>
+        <div><span class="label">Modo</span><strong>Sequência</strong></div>
+        <div><span class="label">Descanso padrão</span><strong>90s</strong></div>
+      </section>
+
+      <section class="card workout hidden" id="workoutPanel">
+        <div class="workout-head">
+          <div>
+            <p class="eyebrow" id="workoutId">Treino</p>
+            <h2 id="workoutTitle"></h2>
+            <p id="workoutSubtitle" class="muted"></p>
+          </div>
+          <button id="closeWorkoutBtn" class="ghost" type="button">Fechar</button>
         </div>
 
-        <div class="timer">
-          <div class="timer-display" id="timerDisplay">00:90</div>
-          <div class="actions grid-3">
-            <button id="timerStartBtn" class="secondary" type="button">Iniciar 90s</button>
-            <button id="timer45Btn" class="secondary" type="button">45s</button>
-            <button id="timerResetBtn" class="ghost" type="button">Reset</button>
+        <div class="exercise-card">
+          <div class="exercise-top">
+            <div>
+              <p class="eyebrow" id="exerciseProgress">Exercício 1/7</p>
+              <h3 id="exerciseName"></h3>
+              <p class="muted" id="exerciseMeta"></p>
+            </div>
+            <div class="machine" id="exerciseMachine"></div>
+          </div>
+
+          <div class="gif-box" id="gifBox">
+            <img id="exerciseGif" class="hidden" alt="GIF do exercício" />
+            <div id="gifPlaceholder" class="gif-placeholder">GIF ainda não importado</div>
+          </div>
+
+          <p class="hint" id="gifSuggestion"></p>
+
+          <div class="actions grid-2">
+            <label class="secondary file-label">
+              Importar GIF deste exercício
+              <input id="gifInput" type="file" accept="image/gif,image/*" />
+            </label>
+            <button id="removeGifBtn" class="ghost" type="button">Remover GIF</button>
+          </div>
+
+          <details class="attention" open>
+            <summary>Pontos de atenção</summary>
+            <p id="exerciseAttention"></p>
+          </details>
+
+          <div class="load-card">
+            <div class="form-grid compact">
+              <label>Carga usada
+                <input id="loadInput" type="number" inputmode="decimal" step="0.5" min="0" placeholder="kg" />
+              </label>
+              <label>Reps realizadas
+                <input id="repsInput" type="text" placeholder="ex.: 12/11/10" />
+              </label>
+            </div>
+            <label>Observação rápida
+              <input id="exerciseNoteInput" type="text" placeholder="ex.: subir 2,5 kg na próxima" />
+            </label>
+            <div class="actions grid-2">
+              <button id="savePerformanceBtn" class="secondary" type="button">Salvar carga</button>
+              <button id="clearPerformanceBtn" class="ghost" type="button">Limpar</button>
+            </div>
+          </div>
+
+          <div class="timer">
+            <div class="timer-display" id="timerDisplay">01:30</div>
+            <div class="actions grid-3">
+              <button id="timerStartBtn" class="secondary" type="button">Iniciar</button>
+              <button id="timer45Btn" class="secondary" type="button">45s</button>
+              <button id="timerResetBtn" class="ghost" type="button">Reset</button>
+            </div>
+          </div>
+
+          <details class="alternatives">
+            <summary>Trocas inteligentes</summary>
+            <ul id="alternativesList"></ul>
+          </details>
+
+          <div class="actions grid-3 nav-actions">
+            <button id="exercisePrevBtn" class="secondary" type="button">Voltar</button>
+            <button id="exerciseSkipBtn" class="ghost" type="button">Pular</button>
+            <button id="exerciseNextBtn" class="primary" type="button">Próximo</button>
           </div>
         </div>
 
-        <details class="alternatives">
-          <summary>Trocas inteligentes</summary>
-          <ul id="alternativesList"></ul>
-        </details>
+        <button id="finishWorkoutBtn" class="finish" type="button">Concluir treino e avançar sequência</button>
+      </section>
 
-        <div class="actions grid-3 nav-actions">
-          <button id="exercisePrevBtn" class="secondary" type="button">Voltar</button>
-          <button id="exerciseSkipBtn" class="ghost" type="button">Pular</button>
-          <button id="exerciseNextBtn" class="primary" type="button">Próximo</button>
-        </div>
-      </div>
-
-      <button id="finishWorkoutBtn" class="finish" type="button">Concluir treino e avançar sequência</button>
+      <section class="card rest hidden" id="restPanel">
+        <h2>Dia de descanso</h2>
+        <p>Descanso registrado sem avançar a sequência. O próximo treino continua sendo o mesmo.</p>
+        <p class="muted">Recuperar também é parte do treino. Só não precisa colocar no currículo.</p>
+        <button id="closeRestBtn" class="primary" type="button">Voltar</button>
+      </section>
     </section>
 
-    <section class="card rest hidden" id="restPanel">
-      <h2>Dia de descanso</h2>
-      <p>Descanso registrado sem avançar a sequência. O próximo treino continua sendo o mesmo.</p>
-      <p class="muted">Recuperar também é parte do treino. Só não precisa postar no LinkedIn.</p>
-      <button id="closeRestBtn" class="primary" type="button">Voltar</button>
+    <section id="measuresTabPanel" class="tab-panel hidden">
+      <section class="card hero">
+        <div>
+          <p class="eyebrow">Medidas e evolução</p>
+          <h2 id="measureHeadline">Sem registro ainda</h2>
+          <p id="measureSubtitle" class="muted">Registre peso e medidas para acompanhar tendência, não variação aleatória do dia.</p>
+        </div>
+        <div class="stats measure-stats">
+          <div><span class="label">IMC</span><strong id="bmiValue">—</strong></div>
+          <div><span class="label">Meta real</span><strong id="realGoalInfo">—</strong></div>
+          <div><span class="label">Meta ideal</span><strong id="idealGoalInfo">—</strong></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Progresso até meta real</span><strong id="realProgressLabel">—</strong></div>
+          <div class="progress"><div id="realProgressBar" class="progress-bar"></div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Novo registro</p>
+            <h2>Medidas corporais</h2>
+          </div>
+          <button id="exportMeasuresBtn" class="ghost" type="button">Exportar</button>
+        </div>
+
+        <form id="measureForm" class="measure-form">
+          <div class="form-grid">
+            <label>Data
+              <input id="measureDate" type="date" required />
+            </label>
+            <label>Peso atual kg
+              <input id="measureWeight" type="number" inputmode="decimal" step="0.1" min="0" placeholder="ex.: 79.8" required />
+            </label>
+            <label>Altura cm
+              <input id="heightCm" type="number" inputmode="decimal" step="0.1" min="80" placeholder="168" />
+            </label>
+            <label>Meta perseguida real kg
+              <input id="realGoalKg" type="number" inputmode="decimal" step="0.1" min="0" placeholder="75" />
+            </label>
+            <label>Meta ideal kg
+              <input id="idealGoalKg" type="number" inputmode="decimal" step="0.1" min="0" placeholder="70" />
+            </label>
+            <label>Cintura cm
+              <input id="waistCm" type="number" inputmode="decimal" step="0.1" min="0" />
+            </label>
+            <label>Abdômen cm
+              <input id="abdomenCm" type="number" inputmode="decimal" step="0.1" min="0" />
+            </label>
+            <label>Quadril cm
+              <input id="hipCm" type="number" inputmode="decimal" step="0.1" min="0" />
+            </label>
+            <label>Peitoral cm
+              <input id="chestCm" type="number" inputmode="decimal" step="0.1" min="0" />
+            </label>
+            <label>Bíceps repouso cm
+              <input id="bicepsRelaxedCm" type="number" inputmode="decimal" step="0.1" min="0" />
+            </label>
+            <label>Bíceps flexionado cm
+              <input id="bicepsFlexedCm" type="number" inputmode="decimal" step="0.1" min="0" />
+            </label>
+            <label>Antebraço cm
+              <input id="forearmCm" type="number" inputmode="decimal" step="0.1" min="0" />
+            </label>
+            <label>Coxa cm
+              <input id="thighCm" type="number" inputmode="decimal" step="0.1" min="0" />
+            </label>
+            <label>Panturrilha cm
+              <input id="calfCm" type="number" inputmode="decimal" step="0.1" min="0" />
+            </label>
+          </div>
+          <label>Observações
+            <textarea id="measureNotes" rows="3" placeholder="ex.: medido ao acordar, antes do café"></textarea>
+          </label>
+          <div class="actions grid-2">
+            <button class="primary" type="submit">Salvar medidas</button>
+            <button id="clearMeasureFormBtn" class="ghost" type="button">Limpar formulário</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Histórico</p>
+            <h2>Evolução registrada</h2>
+          </div>
+          <button id="clearMeasuresBtn" class="ghost danger" type="button">Apagar histórico</button>
+        </div>
+        <div id="measureHistory" class="history empty">Nenhuma medida registrada.</div>
+      </section>
     </section>
   </main>
 
   <footer class="footer">
     <button id="resetBtn" class="linklike" type="button">Resetar sequência</button>
-    <span>V14.2 PWA · GitHub Pages</span>
+    <span>V14.3 PWA · GitHub Pages</span>
   </footer>
 
   <script src="app.js" type="module"></script>

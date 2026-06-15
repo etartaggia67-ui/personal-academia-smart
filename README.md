@@ -1,14 +1,18 @@
-# Personal Academia Smart V14.2 PWA
+# Personal Academia Smart V14.3 PWA
 
-Versão V14.2 para GitHub Pages.
+Versão V14.3 para GitHub Pages.
 
 ## Mudanças principais
 
-- Treino por sequência, não por dia da semana.
-- Domingo mantido como Treino F.
-- Botão Próximo treino sempre disponível.
-- Dia de descanso não avança a sequência.
+- Divisão mais eficiente para hipertrofia natural: Upper / Lower / Push / Pull / Lower / Recuperação ativa.
+- Treino continua por sequência, não por dia da semana.
+- Domingo permanece como Treino F, mas sem obrigação de calendário.
+- Aba Medidas com peso, IMC, evolução, meta ideal e meta perseguida real.
+- Campos de medidas: cintura, abdômen, quadril, peitoral, bíceps repouso/flexionado, antebraço, coxa e panturrilha.
+- Pontos de atenção em cada exercício.
+- Registro rápido de carga, repetições e observação por exercício.
 - GIFs importados por exercício e salvos no IndexedDB do navegador.
+- Exportação de dados em JSON.
 - PWA com manifest e service worker.
 
 ## Sequência
