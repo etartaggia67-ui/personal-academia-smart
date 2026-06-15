@@ -1,51 +1,50 @@
-# Personal Academia Smart V14.4 PWA
+# Personal Academia Smart V14.6
 
-Versão V14.4 para GitHub Pages.
+PWA leve para GitHub Pages com treino sequencial, medidas/evolução e GIFs carregados pelo Google Drive com cache no app.
 
-## Mudanças principais
+## O que mudou na V14.6
 
-- Layout compacto para reduzir rolagem durante o treino.
-- Pontos de atenção, carga/observações e ferramentas de GIF agora ficam recolhidos por padrão.
-- GIFs automáticos via Google Drive para os exercícios mapeados na planilha de GIFs selecionados.
-- Pré-cache inteligente: ao abrir o app, ele tenta guardar em cache os GIFs do próximo treino quando houver conexão.
-- Ao iniciar um treino, o app tenta pré-carregar os GIFs do treino atual e do próximo treino.
-- Mantém importação manual de GIF como substituição local.
-- Se houver GIF manual salvo, ele tem prioridade sobre o GIF automático.
-- Divisão eficiente para hipertrofia natural: Upper / Lower / Push / Pull / Lower / Recuperação ativa.
-- Treino continua por sequência, não por dia da semana.
-- Domingo permanece como Treino F, mas sem obrigação de calendário.
-- Aba Medidas com peso, IMC, evolução, meta ideal e meta perseguida real.
-- Registro rápido de carga, repetições e observação por exercício.
-- Exportação de dados em JSON.
-- PWA com manifest e service worker.
+- Remove os GIFs físicos do repositório para evitar limite de upload do GitHub.
+- Usa `gifDriveId` em `data/workouts.json` para carregar o GIF direto do Google Drive.
+- Botão **Guardar GIF no app** no exercício atual.
+- Botão **Guardar GIFs do próximo treino** na tela inicial.
+- Botão **Guardar todos os GIFs mapeados** para pré-carregar tudo gradualmente.
+- Botão **Baixar .gif no celular** como plano B, abrindo o download do Drive.
+- Ícone do app redesenhado em `assets/icons/`.
+- Botão **Spotify** direto no cabeçalho.
+- Tela do exercício mais compacta: pontos de atenção, carga/notas e GIF/cache fechados por padrão.
 
-## Sequência
+## Observação sobre cache e celular
 
-A → B → C → D → E → F → A
+O navegador não pode salvar arquivos sozinho em uma pasta do celular sem permissão. A V14.6 faz o caminho mais prático para PWA:
 
-## Observação sobre os GIFs automáticos
+1. Carrega o GIF pelo Drive.
+2. Guarda no cache interno do app quando você toca em **Guardar GIF no app** ou **Guardar GIFs do próximo treino**.
+3. Tenta exibir pelo cache nas próximas aberturas.
 
-Os GIFs são carregados por links públicos do Google Drive e guardados em cache quando possível.
-Isso reduz a necessidade de importar manualmente, mas depende de conexão na primeira carga e da disponibilidade do Drive.
+O botão **Baixar .gif no celular** abre o download do arquivo para a pasta padrão de downloads do Android, mas esse arquivo baixado não é lido automaticamente pelo app. Para o app, o que importa é o cache PWA.
 
-O botão de importação manual permanece como plano B para qualquer GIF que não carregue.
+## Arquivos para subir no GitHub
 
-## Publicação no GitHub Pages
+Suba a pasta inteira, sem `assets/gifs/`:
 
-Substitua ou envie estes arquivos na raiz do repositório:
+```text
+index.html
+styles.css
+app.js
+manifest.json
+service-worker.js
+README.md
+data/workouts.json
+assets/icons/
+```
 
-- index.html
-- styles.css
-- app.js
-- manifest.json
-- service-worker.js
-- README.md
-- data/workouts.json
-- assets/icons/icon-192.png
-- assets/icons/icon-512.png
+## Depois de publicar
 
-Depois acesse:
+Abra:
 
+```text
 https://etartaggia67-ui.github.io/personal-academia-smart/
+```
 
-Se abrir versão antiga, limpe cache do navegador ou aguarde o service worker atualizar.
+Se aparecer versão antiga, limpe o cache/service worker ou aguarde o GitHub Pages atualizar.

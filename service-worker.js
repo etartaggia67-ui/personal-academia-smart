@@ -1,5 +1,5 @@
-const STATIC_CACHE = 'personal-academia-smart-v14-4-static-v1';
-const REMOTE_GIF_CACHE = 'pas_v144_remote_gifs';
+const STATIC_CACHE = 'personal-academia-smart-v14-6-static-v1';
+const REMOTE_GIF_CACHE = 'pas_v146_drive_gifs';
 const ASSETS = [
   './',
   './index.html',
@@ -8,7 +8,10 @@ const ASSETS = [
   './manifest.json',
   './data/workouts.json',
   './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png'
+  './assets/icons/icon-512.png',
+  './assets/icons/maskable-192.png',
+  './assets/icons/maskable-512.png',
+  './assets/icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', event => {

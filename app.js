@@ -1,7 +1,8 @@
-const STATE_KEY = 'pas_v144_state';
-const DB_NAME = 'pas_v144_gifs';
+const STATE_KEY = 'pas_v146_state';
+const LEGACY_STATE_KEYS = ['pas_v145_state', 'pas_v144_state', 'pas_v143_state'];
+const DB_NAME = 'pas_v146_manual_gifs';
 const DB_STORE = 'gifs';
-const REMOTE_GIF_CACHE = 'pas_v144_remote_gifs';
+const REMOTE_GIF_CACHE = 'pas_v146_drive_gifs';
 
 let data;
 let state;
@@ -10,6 +11,7 @@ let currentExerciseIndex = 0;
 let timerHandle = null;
 let timerRemaining = 90;
 let deferredInstallPrompt = null;
+const DEFAULT_SPOTIFY_URL = 'https://open.spotify.com/';
 
 const $ = (id) => document.getElementById(id);
 
@@ -46,14 +48,23 @@ function defaultState() {
 function loadState() {
   const fallback = defaultState();
   try {
-    const saved = JSON.parse(localStorage.getItem(STATE_KEY)) || {};
-    return {
+    let raw = localStorage.getItem(STATE_KEY);
+    if (!raw) {
+      for (const key of LEGACY_STATE_KEYS) {
+        raw = localStorage.getItem(key);
+        if (raw) break;
+      }
+    }
+    const saved = JSON.parse(raw) || {};
+    const merged = {
       ...fallback,
       ...saved,
       profile: { ...fallback.profile, ...(saved.profile || {}) },
       measures: Array.isArray(saved.measures) ? saved.measures : [],
       performances: saved.performances || {}
     };
+    localStorage.setItem(STATE_KEY, JSON.stringify(merged));
+    return merged;
   } catch (_) {
     return fallback;
   }
@@ -98,6 +109,7 @@ function renderHome() {
 function bindEvents() {
   $('tabWorkout').addEventListener('click', () => showTab('workout'));
   $('tabMeasures').addEventListener('click', () => showTab('measures'));
+  $('spotifyBtn')?.addEventListener('click', openSpotify);
 
   $('startBtn').addEventListener('click', () => startWorkout(state.nextWorkoutId));
   $('nextBtn').addEventListener('click', () => setNextWorkout(nextId(state.nextWorkoutId)));
@@ -115,6 +127,10 @@ function bindEvents() {
   $('timer45Btn').addEventListener('click', () => startTimer(45));
   $('timerResetBtn').addEventListener('click', () => resetTimer(currentExercise().rest || 90));
   $('resetBtn').addEventListener('click', resetSequence);
+  $('cacheAllGifsBtn')?.addEventListener('click', preloadAllGifs);
+  $('cacheWorkoutGifsBtn')?.addEventListener('click', preloadNextWorkoutGifs);
+  $('cacheExerciseGifBtn')?.addEventListener('click', cacheCurrentExerciseGif);
+  $('downloadExerciseGifBtn')?.addEventListener('click', downloadCurrentExerciseGif);
   $('savePerformanceBtn').addEventListener('click', savePerformance);
   $('clearPerformanceBtn').addEventListener('click', clearPerformance);
 
@@ -310,11 +326,12 @@ async function loadGifForExercise(exerciseOrId) {
     img.classList.remove('hidden');
     placeholder.classList.add('hidden');
     $('gifSuggestion').textContent = `GIF manual salvo neste aparelho. Sugestão original: ${ex.gifFile || ex.gifSuggestion || 'não definida'}.`;
+    updateGifCacheStatus(ex, 'manual');
     return;
   }
 
   if (autoUrl) {
-    placeholder.textContent = 'Carregando GIF automático…';
+    placeholder.textContent = 'Carregando GIF do Drive…';
     img.onload = () => {
       placeholder.classList.add('hidden');
       img.classList.remove('hidden');
@@ -322,12 +339,15 @@ async function loadGifForExercise(exerciseOrId) {
     img.onerror = () => {
       img.classList.add('hidden');
       img.removeAttribute('src');
-      placeholder.textContent = 'GIF automático não carregou. Use “Trocar GIF manualmente”.';
+      placeholder.textContent = 'GIF do Drive não carregou. Use “Baixar .gif no celular” ou “Trocar GIF manualmente”.';
       placeholder.classList.remove('hidden');
     };
     img.src = autoUrl;
     img.classList.remove('hidden');
-    $('gifSuggestion').textContent = `GIF automático: ${ex.gifFile || ex.gifSuggestion}. Cache inicial será feito quando houver conexão.`;
+    $('gifSuggestion').textContent = ex.gifDriveId
+      ? `GIF automático via Drive: ${ex.gifFile || ex.gifSuggestion}. Toque em “Guardar GIF no app” para tentar deixar offline.`
+      : `GIF automático: ${ex.gifFile || ex.gifSuggestion}.`;
+    updateGifCacheStatus(ex);
     return;
   }
 
@@ -335,42 +355,212 @@ async function loadGifForExercise(exerciseOrId) {
   $('gifSuggestion').textContent = ex.gifSuggestion && !String(ex.gifSuggestion).toLowerCase().includes('sem gif')
     ? `Sugestão: ${ex.gifSuggestion}`
     : 'Sem GIF automático para este exercício. Pode importar manualmente quando quiser.';
+  updateGifCacheStatus(ex, 'none');
 }
 
 function gifUrlForExercise(ex) {
   if (!ex) return '';
+  if (ex.gifDriveId) return driveViewUrl(ex.gifDriveId);
   if (ex.gifUrl) return ex.gifUrl;
-  if (ex.gifDriveId) return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(ex.gifDriveId)}`;
+  if (ex.gifLocal) return encodeURI(ex.gifLocal);
   return '';
 }
 
-function gifCacheRequest(url) {
-  return new Request(url, { mode: 'no-cors', cache: 'force-cache' });
+function driveViewUrl(id) {
+  return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(id)}`;
 }
 
-async function cacheGifForExercise(ex) {
+function driveDownloadUrl(id) {
+  return `https://drive.google.com/uc?export=download&id=${encodeURIComponent(id)}`;
+}
+
+function fileNameFromPath(path) {
+  return String(path || '').split('/').pop() || path;
+}
+
+function gifCacheRequest(url) {
+  const absolute = new URL(url, location.href);
+  if (absolute.origin === location.origin) {
+    return new Request(absolute.href, { cache: 'force-cache' });
+  }
+  return new Request(absolute.href, { mode: 'no-cors', cache: 'force-cache' });
+}
+
+async function cacheGifForExercise(ex, updateStatus = false) {
   const url = gifUrlForExercise(ex);
-  if (!url || !('caches' in window) || !navigator.onLine) return false;
+  if (!url || !('caches' in window)) {
+    if (updateStatus) setGifCacheStatus('Cache não disponível para este GIF.');
+    return false;
+  }
+  if (!navigator.onLine) {
+    if (updateStatus) setGifCacheStatus('Sem conexão. Abra online para guardar este GIF no app.');
+    return false;
+  }
   try {
+    if (updateStatus) setGifCacheStatus('Baixando do Drive para o cache do app…');
     const cache = await caches.open(REMOTE_GIF_CACHE);
     const req = gifCacheRequest(url);
     const cached = await cache.match(req);
-    if (cached) return true;
+    if (cached) {
+      if (updateStatus) setGifCacheStatus('GIF já está guardado no cache do app.');
+      return true;
+    }
     const response = await fetch(req);
     await cache.put(req, response.clone());
+    if (updateStatus) setGifCacheStatus('GIF guardado no cache do app.');
     return true;
+  } catch (_) {
+    if (updateStatus) setGifCacheStatus('Não consegui guardar no cache. Use “Baixar .gif no celular” como plano B.');
+    return false;
+  }
+}
+
+async function preloadGifsForWorkout(workoutId, showStatus = false) {
+  if (!('caches' in window)) {
+    if (showStatus && $('cacheStatus')) $('cacheStatus').textContent = 'Cache não disponível neste navegador.';
+    return 0;
+  }
+  if (!navigator.onLine) {
+    if (showStatus && $('cacheStatus')) $('cacheStatus').textContent = 'Sem conexão. Abra online uma vez para guardar os GIFs.';
+    return 0;
+  }
+  const workout = getWorkout(workoutId);
+  if (!workout?.exercises?.length) return 0;
+  let ok = 0;
+  for (let i = 0; i < workout.exercises.length; i++) {
+    if (showStatus && $('cacheStatus')) $('cacheStatus').textContent = `Guardando GIFs do Treino ${workoutId}: ${i + 1}/${workout.exercises.length}…`;
+    const done = await cacheGifForExercise(workout.exercises[i]);
+    if (done) ok++;
+    await new Promise(resolve => setTimeout(resolve, 60));
+  }
+  if (showStatus && $('cacheStatus')) $('cacheStatus').textContent = `Treino ${workoutId}: ${ok}/${workout.exercises.length} GIFs guardados no app.`;
+  return ok;
+}
+
+function uniqueGifExercises() {
+  const byUrl = new Map();
+  data.workouts.forEach(workout => {
+    workout.exercises.forEach(ex => {
+      const url = gifUrlForExercise(ex);
+      if (url && !byUrl.has(url)) byUrl.set(url, ex);
+    });
+  });
+  return [...byUrl.values()];
+}
+
+async function preloadNextWorkoutGifs() {
+  const id = state.nextWorkoutId;
+  await preloadGifsForWorkout(id, true);
+  vibrate(90);
+}
+
+async function preloadAllGifs() {
+  const status = $('cacheStatus');
+  if (!('caches' in window)) {
+    if (status) status.textContent = 'Cache não disponível neste navegador.';
+    return;
+  }
+  if (!navigator.onLine) {
+    if (status) status.textContent = 'Sem conexão. Abra online uma vez para pré-carregar.';
+    return;
+  }
+
+  const exercises = uniqueGifExercises();
+  let ok = 0;
+  if (status) status.textContent = `Guardando GIFs 0/${exercises.length}…`;
+
+  for (let i = 0; i < exercises.length; i++) {
+    const done = await cacheGifForExercise(exercises[i]);
+    if (done) ok++;
+    if (status) status.textContent = `Guardando GIFs ${i + 1}/${exercises.length}…`;
+    await new Promise(resolve => setTimeout(resolve, 80));
+  }
+
+  if (status) status.textContent = `GIFs guardados no app: ${ok}/${exercises.length}.`;
+  vibrate(90);
+}
+
+async function cacheCurrentExerciseGif() {
+  if (!currentWorkout) return;
+  const ex = currentExercise();
+  const done = await cacheGifForExercise(ex, true);
+  if (done) vibrate(80);
+}
+
+async function downloadCurrentExerciseGif() {
+  if (!currentWorkout) return;
+  const ex = currentExercise();
+  const record = await getGif(ex.id);
+
+  if (record?.blob) {
+    const url = URL.createObjectURL(record.blob);
+    triggerDownload(url, safeGifName(ex));
+    window.setTimeout(() => URL.revokeObjectURL(url), 2500);
+    return;
+  }
+
+  if (ex.gifDriveId) {
+    window.open(driveDownloadUrl(ex.gifDriveId), '_blank', 'noopener,noreferrer');
+    setGifCacheStatus('Download aberto. O Android deve salvar em Downloads; o app usa o cache próprio para mostrar offline.');
+    return;
+  }
+
+  const url = gifUrlForExercise(ex);
+  if (url) {
+    window.open(url, '_blank', 'noopener,noreferrer');
+    setGifCacheStatus('GIF aberto em nova aba para salvar manualmente.');
+    return;
+  }
+
+  setGifCacheStatus('Este exercício não tem GIF automático para baixar.');
+}
+
+function triggerDownload(url, name) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function safeGifName(ex) {
+  const base = (ex.name || ex.id || 'gif')
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return `${base || 'exercicio'}.gif`;
+}
+
+async function isGifCached(ex) {
+  const url = gifUrlForExercise(ex);
+  if (!url || !('caches' in window)) return false;
+  try {
+    const cache = await caches.open(REMOTE_GIF_CACHE);
+    return Boolean(await cache.match(gifCacheRequest(url)));
   } catch (_) {
     return false;
   }
 }
 
-async function preloadGifsForWorkout(workoutId) {
-  if (!('caches' in window) || !navigator.onLine) return;
-  const workout = getWorkout(workoutId);
-  if (!workout?.exercises?.length) return;
-  for (const ex of workout.exercises) {
-    await cacheGifForExercise(ex);
-  }
+async function updateGifCacheStatus(ex, mode) {
+  if (!$('gifCacheStatus')) return;
+  if (mode === 'manual') return setGifCacheStatus('GIF manual salvo no armazenamento interno do app.');
+  if (mode === 'none') return setGifCacheStatus('Sem GIF automático para guardar.');
+  const cached = await isGifCached(ex);
+  setGifCacheStatus(cached ? 'GIF já guardado no cache do app.' : 'GIF ainda não está no cache. Toque em “Guardar GIF no app”.');
+}
+
+function setGifCacheStatus(message) {
+  if ($('gifCacheStatus')) $('gifCacheStatus').textContent = message;
+}
+
+function openSpotify() {
+  const url = state?.spotifyUrl || DEFAULT_SPOTIFY_URL;
+  window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 function scheduleInitialGifCache() {
@@ -599,7 +789,7 @@ function clearMeasures() {
 function exportMeasures() {
   const payload = {
     app: 'Personal Academia Smart',
-    version: '14.4',
+    version: '14.5',
     exportedAt: new Date().toISOString(),
     profile: state.profile,
     measures: state.measures,
@@ -610,7 +800,7 @@ function exportMeasures() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'personal-academia-smart-v14.4-dados.json';
+  a.download = 'personal-academia-smart-v14.5-dados.json';
   a.click();
   URL.revokeObjectURL(url);
 }

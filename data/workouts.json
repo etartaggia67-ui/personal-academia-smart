@@ -1,5 +1,5 @@
 {
-  "version": "14.4",
+  "version": "14.6",
   "sequence": [
     "A",
     "B",
@@ -35,7 +35,7 @@
           ],
           "gifFile": "Supino Inclinado na Máquina com Pegada Martelo.gif",
           "gifDriveId": "1VQdExMsiH9vmb-o5ib2PfGhjyvP_QHwy",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "a2",
@@ -53,7 +53,7 @@
           ],
           "gifFile": "Remada Sentada na Máquina.gif",
           "gifDriveId": "17B9LKj19lwx5pGlDJH5deJ8SIOAm5O_L",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "a3",
@@ -71,7 +71,7 @@
           ],
           "gifFile": "Puxada Alta com Alavanca.gif",
           "gifDriveId": "1LKvqQCymDr8_1pmFWnGf8uoJ4p-L3P2H",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "a4",
@@ -89,7 +89,7 @@
           ],
           "gifFile": "voador maquina.gif",
           "gifDriveId": "1dZzuF1KlQptTBTzEqdspUZZ0Bxch9Bul",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "a5",
@@ -107,7 +107,7 @@
           ],
           "gifFile": "Elevação lateral alternada com halteres.gif",
           "gifDriveId": "169Rfapfw0DOvWQK1v0U293rhjfBMg5-N",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "a6",
@@ -125,7 +125,7 @@
           ],
           "gifFile": "Tríceps Pulley barra V.gif",
           "gifDriveId": "11voEuLPPpA7kc9bXuTOyOcEtvqd9Bimk",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "a7",
@@ -143,7 +143,7 @@
           ],
           "gifFile": "Rosca alternada com halteres sentado.gif",
           "gifDriveId": "1RsHTCw-TbR4LFUCQRujcSoM19xfriDUQ",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         }
       ]
     },
@@ -168,7 +168,7 @@
           ],
           "gifFile": "Leg Press.gif",
           "gifDriveId": "1Bmi5BUlmjkfmym_yGieNPNmsipAJfTT7",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "b2",
@@ -186,7 +186,7 @@
           ],
           "gifFile": "Cadeira extensora.gif",
           "gifDriveId": "1PTJapJQHXELyo700ITfLjgtuYpnCkXEr",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "b3",
@@ -204,7 +204,7 @@
           ],
           "gifFile": "Agachamento Goblet com Haltere.gif",
           "gifDriveId": "1_AQg9Vzgcwy21skBwGaRznFNeP1o4EEk",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "b4",
@@ -222,7 +222,7 @@
           ],
           "gifFile": "cadeira adutora.gif",
           "gifDriveId": "11Hg8QvDNgxFm3DTdWW_u2REMIGQ-_2bR",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "b5",
@@ -240,7 +240,7 @@
           ],
           "gifFile": "CADEIRA-ABDUTORA.gif",
           "gifDriveId": "1ewYM1pt1UPFnE5FKqq8kQr04rtvLfAK5",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "b6",
@@ -258,7 +258,7 @@
           ],
           "gifFile": "Elevação Unilateral de Panturrilha no Leg Press.gif",
           "gifDriveId": "1MgUgymsm9CcP3Ni94avJal8jNqTXGZK6",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "b7",
@@ -276,7 +276,7 @@
           ],
           "gifFile": "ABDOMINAL MAQUINA.gif",
           "gifDriveId": "1chKWHro5BVwLaIjxSrRdJUDzeTUXk38b",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         }
       ]
     },
@@ -333,7 +333,7 @@
           ],
           "gifFile": "voador maquina.gif",
           "gifDriveId": "1dZzuF1KlQptTBTzEqdspUZZ0Bxch9Bul",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "c4",
@@ -351,7 +351,7 @@
           ],
           "gifFile": "Elevação lateral alternada com halteres.gif",
           "gifDriveId": "169Rfapfw0DOvWQK1v0U293rhjfBMg5-N",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "c5",
@@ -369,7 +369,7 @@
           ],
           "gifFile": "Máquina de flexão de tríceps.gif",
           "gifDriveId": "15-s9WWZU2dacFHxgXEH37B2SNWgRD6-f",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "c6",
@@ -387,7 +387,7 @@
           ],
           "gifFile": "Tríceps pulley corda.gif",
           "gifDriveId": "1mbvi69o6StABmoRX3b_vHt5wSVIn54gP",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         }
       ]
     },
@@ -412,7 +412,7 @@
           ],
           "gifFile": "Puxada Alta com Alavanca.gif",
           "gifDriveId": "1LKvqQCymDr8_1pmFWnGf8uoJ4p-L3P2H",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "d2",
@@ -430,7 +430,7 @@
           ],
           "gifFile": "Remada Sentada na Máquina.gif",
           "gifDriveId": "17B9LKj19lwx5pGlDJH5deJ8SIOAm5O_L",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "d3",
@@ -448,7 +448,7 @@
           ],
           "gifFile": "barra no graviton em pé.gif",
           "gifDriveId": "1NcuN0tZ5JIsn5O8MgDGu-URuu0nRVXJx",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "d4",
@@ -466,7 +466,7 @@
           ],
           "gifFile": "Remada de deltoide posterior sentado com haltere.gif",
           "gifDriveId": "18UT-BspcW9zISgkmi4FmKL2-mpcePggp",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "d5",
@@ -484,7 +484,7 @@
           ],
           "gifFile": "Rosca alternada com halteres sentado.gif",
           "gifDriveId": "1RsHTCw-TbR4LFUCQRujcSoM19xfriDUQ",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "d6",
@@ -518,7 +518,7 @@
           ],
           "gifFile": "Extensão lombar sentada.gif",
           "gifDriveId": "15Nt6OAae756vG6aE10qE6kOnbBtpP97r",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         }
       ]
     },
@@ -543,7 +543,7 @@
           ],
           "gifFile": "Cadeira flexora.gif",
           "gifDriveId": "1zA8PWwhAl7p1SeN1k5S8S8Zkqvx6QpFO",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "e2",
@@ -577,7 +577,7 @@
           ],
           "gifFile": "Stiff com Halter.gif",
           "gifDriveId": "1itXDS87W7y_ipuXwlSgmKZ-IMwc7sMiJ",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "e4",
@@ -595,7 +595,7 @@
           ],
           "gifFile": "Leg Press.gif",
           "gifDriveId": "1Bmi5BUlmjkfmym_yGieNPNmsipAJfTT7",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "e5",
@@ -613,7 +613,7 @@
           ],
           "gifFile": "CADEIRA-ABDUTORA.gif",
           "gifDriveId": "1ewYM1pt1UPFnE5FKqq8kQr04rtvLfAK5",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "e6",
@@ -631,7 +631,7 @@
           ],
           "gifFile": "Elevação de Panturrilha na Máquina.gif",
           "gifDriveId": "1u2GGf9vPF52_kG_8deemo4dKi_ZY1QSV",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "e7",
@@ -649,7 +649,7 @@
           ],
           "gifFile": "PRANCHA.gif",
           "gifDriveId": "1OEooNYNz1E1r-lZQaCIsiWjR0ghO8MSv",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         }
       ]
     },
@@ -722,7 +722,7 @@
           ],
           "gifFile": "PRANCHA.gif",
           "gifDriveId": "1OEooNYNz1E1r-lZQaCIsiWjR0ghO8MSv",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "f5",
@@ -740,7 +740,7 @@
           ],
           "gifFile": "ABDOMINAL MAQUINA.gif",
           "gifDriveId": "1chKWHro5BVwLaIjxSrRdJUDzeTUXk38b",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         },
         {
           "id": "f6",
@@ -758,9 +758,11 @@
           ],
           "gifFile": "Extensão lombar sentada.gif",
           "gifDriveId": "15Nt6OAae756vG6aE10qE6kOnbBtpP97r",
-          "gifAuto": "drive"
+          "gifAuto": "drive-cache"
         }
       ]
     }
-  ]
+  ],
+  "gifMode": "drive-cache",
+  "localGifCount": 22
 }

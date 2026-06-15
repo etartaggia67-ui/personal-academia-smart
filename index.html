@@ -4,18 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111827" />
-  <title>Personal Academia Smart V14.4</title>
+  <title>Personal Academia Smart V14.6</title>
   <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="app-header">
     <div>
       <p class="eyebrow">Personal Academia Smart</p>
-      <h1>V14.4</h1>
-      <p class="muted">Sequência eficaz · GIFs automáticos · layout compacto</p>
+      <h1>V14.6</h1>
+      <p class="muted">Sequência eficaz · GIFs por Drive/cache · Spotify direto</p>
     </div>
-    <button id="installBtn" class="ghost hidden" type="button">Instalar</button>
+    <div class="header-actions">
+      <button id="spotifyBtn" class="spotify" type="button">Spotify</button>
+      <button id="installBtn" class="ghost hidden" type="button">Instalar</button>
+    </div>
   </header>
 
   <nav class="tabs" aria-label="Navegação principal">
@@ -46,6 +50,21 @@
         <div><span class="label">Descanso padrão</span><strong>90s</strong></div>
       </section>
 
+      <section class="card cache-panel">
+        <div class="section-head compact-head">
+          <div>
+            <p class="eyebrow">GIFs</p>
+            <h2>Baixar para o app</h2>
+            <p class="muted">Busca do Drive e guarda no cache do PWA. Não precisa caçar arquivo um por um.</p>
+          </div>
+        </div>
+        <div class="actions grid-2">
+          <button id="cacheWorkoutGifsBtn" class="secondary" type="button">Guardar GIFs do próximo treino</button>
+          <button id="cacheAllGifsBtn" class="ghost" type="button">Guardar todos os GIFs mapeados</button>
+        </div>
+        <p id="cacheStatus" class="hint">Abra online, toque uma vez e depois o app tenta usar o cache.</p>
+      </section>
+
       <section class="card workout hidden" id="workoutPanel">
         <div class="workout-head">
           <div>
@@ -71,16 +90,22 @@
             <div id="gifPlaceholder" class="gif-placeholder">GIF ainda não importado</div>
           </div>
 
+          <p class="hint" id="gifSuggestion"></p>
+
           <details class="gif-tools">
             <summary>GIF e cache</summary>
-            <p class="hint" id="gifSuggestion"></p>
-            <div class="actions grid-2 compact-actions">
+            <div class="actions grid-2 detail-actions">
+              <button id="cacheExerciseGifBtn" class="secondary" type="button">Guardar GIF no app</button>
+              <button id="downloadExerciseGifBtn" class="ghost" type="button">Baixar .gif no celular</button>
+            </div>
+            <div class="actions grid-2 detail-actions">
               <label class="secondary file-label">
                 Trocar GIF manualmente
                 <input id="gifInput" type="file" accept="image/gif,image/*" />
               </label>
               <button id="removeGifBtn" class="ghost" type="button">Remover manual</button>
             </div>
+            <p id="gifCacheStatus" class="hint">Cache ainda não verificado.</p>
           </details>
 
           <details class="attention">
@@ -89,8 +114,8 @@
           </details>
 
           <details class="load-card">
-            <summary>Carga e observações</summary>
-            <div class="form-grid compact">
+            <summary>Carga e notas</summary>
+            <div class="form-grid compact detail-form">
               <label>Carga usada
                 <input id="loadInput" type="number" inputmode="decimal" step="0.5" min="0" placeholder="kg" />
               </label>
@@ -101,7 +126,7 @@
             <label>Observação rápida
               <input id="exerciseNoteInput" type="text" placeholder="ex.: subir 2,5 kg na próxima" />
             </label>
-            <div class="actions grid-2 compact-actions">
+            <div class="actions grid-2">
               <button id="savePerformanceBtn" class="secondary" type="button">Salvar carga</button>
               <button id="clearPerformanceBtn" class="ghost" type="button">Limpar</button>
             </div>
@@ -236,7 +261,7 @@
 
   <footer class="footer">
     <button id="resetBtn" class="linklike" type="button">Resetar sequência</button>
-    <span>V14.4 PWA · GitHub Pages</span>
+    <span>V14.6 PWA · GitHub Pages</span>
   </footer>
 
   <script src="app.js" type="module"></script>
