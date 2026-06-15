@@ -1,43 +1,36 @@
-# Personal Academia Smart V14.1 — PWA Offline
+# Personal Academia Smart V14.2 PWA
 
-Versão offline-first para celular, sem Google Apps Script como motor principal.
+Versão V14.2 para GitHub Pages.
 
-## Uso principal
+## Mudanças principais
 
-- Abra pelo link publicado no GitHub Pages.
-- No Chrome Android, use **Adicionar à tela inicial** ou **Instalar app**.
-- O app salva cargas, medidas e progresso no próprio navegador/celular.
+- Treino por sequência, não por dia da semana.
+- Domingo mantido como Treino F.
+- Botão Próximo treino sempre disponível.
+- Dia de descanso não avança a sequência.
+- GIFs importados por exercício e salvos no IndexedDB do navegador.
+- PWA com manifest e service worker.
 
-## GIFs e imagens
+## Sequência
 
-### Importar direto no exercício
+A → B → C → D → E → F → A
 
-Na tela de treino, quando aparecer **GIF pendente**, toque em:
+## Publicação no GitHub Pages
 
-**Importar GIF deste exercício**
+Substitua ou envie estes arquivos na raiz do repositório:
 
-Escolha um GIF, WebP, PNG ou JPG. O arquivo fica vinculado diretamente ao exercício atual, sem depender do nome do arquivo.
+- index.html
+- styles.css
+- app.js
+- manifest.json
+- service-worker.js
+- README.md
+- data/workouts.json
+- assets/icons/icon-192.png
+- assets/icons/icon-512.png
 
-Depois você pode:
+Depois acesse:
 
-- **Trocar GIF** no próprio exercício.
-- **Remover GIF** se quiser desfazer.
+https://etartaggia67-ui.github.io/personal-academia-smart/
 
-### Importar em lote
-
-Em **Config > GIFs e imagens**, importe vários arquivos. O app tenta associar pelo nome do arquivo.
-
-Exemplos de nomes úteis:
-
-- `puxada-alta.gif`
-- `supino-articulado.gif`
-- `leg-press.gif`
-- `flexora.gif`
-
-## Backup
-
-Use **Config > Exportar JSON** para salvar seus dados de treino e medidas. GIFs importados direto ficam no navegador do dispositivo e não entram no JSON.
-
-## Atualizações
-
-Ao enviar nova versão ao GitHub Pages, pode ser necessário fechar e abrir o app novamente. Se o visual antigo persistir, limpe o cache do site no Chrome.
+Se abrir versão antiga, limpe cache do navegador ou aguarde o service worker atualizar.
