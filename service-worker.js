@@ -1,5 +1,5 @@
-const STATIC_CACHE = 'personal-academia-smart-v14-6-static-v1';
-const REMOTE_GIF_CACHE = 'pas_v146_drive_gifs';
+const STATIC_CACHE = 'personal-academia-smart-v14-7-static-v1';
+const REMOTE_GIF_CACHE = 'pas_v147_legacy_gifs';
 const ASSETS = [
   './',
   './index.html',

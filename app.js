@@ -1,8 +1,8 @@
-const STATE_KEY = 'pas_v146_state';
-const LEGACY_STATE_KEYS = ['pas_v145_state', 'pas_v144_state', 'pas_v143_state'];
-const DB_NAME = 'pas_v146_manual_gifs';
+const STATE_KEY = 'pas_v147_state';
+const LEGACY_STATE_KEYS = ['pas_v146_state', 'pas_v145_state', 'pas_v144_state', 'pas_v143_state'];
+const DB_NAME = 'pas_v147_local_gifs';
 const DB_STORE = 'gifs';
-const REMOTE_GIF_CACHE = 'pas_v146_drive_gifs';
+const REMOTE_GIF_CACHE = 'pas_v147_legacy_gifs';
 
 let data;
 let state;
@@ -26,7 +26,7 @@ async function init() {
   setToday();
   renderHome();
   renderMeasures();
-  scheduleInitialGifCache();
+  renderGifLibraryStatus();
 }
 
 function defaultState() {
@@ -61,8 +61,11 @@ function loadState() {
       ...saved,
       profile: { ...fallback.profile, ...(saved.profile || {}) },
       measures: Array.isArray(saved.measures) ? saved.measures : [],
-      performances: saved.performances || {}
+      performances: saved.performances || {},
+      gifLibrary: saved.gifLibrary || null
     };
+    if (!data.sequence.includes(merged.nextWorkoutId)) merged.nextWorkoutId = data.sequence[0] || 'A';
+    if (merged.lastDone && !data.sequence.includes(merged.lastDone)) merged.lastDone = null;
     localStorage.setItem(STATE_KEY, JSON.stringify(merged));
     return merged;
   } catch (_) {
@@ -84,12 +87,14 @@ function sequenceIndex(id) {
 
 function nextId(id) {
   const idx = sequenceIndex(id);
-  return data.sequence[(idx + 1) % data.sequence.length];
+  const safe = idx >= 0 ? idx : 0;
+  return data.sequence[(safe + 1) % data.sequence.length];
 }
 
 function prevId(id) {
   const idx = sequenceIndex(id);
-  return data.sequence[(idx - 1 + data.sequence.length) % data.sequence.length];
+  const safe = idx >= 0 ? idx : 0;
+  return data.sequence[(safe - 1 + data.sequence.length) % data.sequence.length];
 }
 
 function setNextWorkout(id) {
@@ -104,6 +109,7 @@ function renderHome() {
   $('nextWorkoutSubtitle').textContent = workout.subtitle;
   $('lastDone').textContent = state.lastDone ? `Treino ${state.lastDone}` : 'Nenhum';
   $('sequencePills').innerHTML = data.sequence.map(id => `<span class="pill ${id === state.nextWorkoutId ? 'active' : ''}">${id}</span>`).join('');
+  renderGifLibraryStatus();
 }
 
 function bindEvents() {
@@ -127,10 +133,11 @@ function bindEvents() {
   $('timer45Btn').addEventListener('click', () => startTimer(45));
   $('timerResetBtn').addEventListener('click', () => resetTimer(currentExercise().rest || 90));
   $('resetBtn').addEventListener('click', resetSequence);
-  $('cacheAllGifsBtn')?.addEventListener('click', preloadAllGifs);
-  $('cacheWorkoutGifsBtn')?.addEventListener('click', preloadNextWorkoutGifs);
-  $('cacheExerciseGifBtn')?.addEventListener('click', cacheCurrentExerciseGif);
-  $('downloadExerciseGifBtn')?.addEventListener('click', downloadCurrentExerciseGif);
+  $('cacheWorkoutGifsBtn')?.addEventListener('click', connectGifFolder);
+  $('cacheAllGifsBtn')?.addEventListener('click', () => $('gifFolderInput')?.click());
+  $('gifFolderInput')?.addEventListener('change', importGifFolderInput);
+  $('cacheExerciseGifBtn')?.addEventListener('click', () => $('gifInput')?.click());
+  $('downloadExerciseGifBtn')?.addEventListener('click', connectGifFolder);
   $('savePerformanceBtn').addEventListener('click', savePerformance);
   $('clearPerformanceBtn').addEventListener('click', clearPerformance);
 
@@ -158,8 +165,6 @@ function startWorkout(id) {
   $('workoutTitle').textContent = currentWorkout.title;
   $('workoutSubtitle').textContent = currentWorkout.subtitle;
   renderExercise();
-  preloadGifsForWorkout(id);
-  preloadGifsForWorkout(nextId(id));
   $('workoutPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -183,7 +188,6 @@ async function renderExercise() {
   loadPerformance(ex.id);
   resetTimer(ex.rest || 90);
   await loadGifForExercise(ex);
-  cacheGifForExercise(ex);
 }
 
 function moveExercise(delta) {
@@ -291,6 +295,7 @@ async function importGif(event) {
   await putGif(currentExercise().id, file);
   await loadGifForExercise(currentExercise().id);
   event.target.value = '';
+  vibrate(80);
 }
 
 async function removeCurrentGif() {
@@ -304,7 +309,6 @@ async function loadGifForExercise(exerciseOrId) {
   const record = await getGif(exerciseId);
   const img = $('exerciseGif');
   const placeholder = $('gifPlaceholder');
-  const autoUrl = gifUrlForExercise(ex);
 
   img.onload = null;
   img.onerror = null;
@@ -318,43 +322,22 @@ async function loadGifForExercise(exerciseOrId) {
     img.onerror = () => {
       URL.revokeObjectURL(url);
       img.classList.add('hidden');
-      placeholder.textContent = 'GIF manual não carregou';
+      placeholder.textContent = 'GIF local não carregou';
       placeholder.classList.remove('hidden');
     };
-    placeholder.textContent = 'Carregando GIF manual…';
+    placeholder.textContent = 'Carregando GIF local…';
     img.src = url;
     img.classList.remove('hidden');
     placeholder.classList.add('hidden');
-    $('gifSuggestion').textContent = `GIF manual salvo neste aparelho. Sugestão original: ${ex.gifFile || ex.gifSuggestion || 'não definida'}.`;
-    updateGifCacheStatus(ex, 'manual');
+    $('gifSuggestion').textContent = `GIF local salvo neste aparelho. Arquivo esperado: ${ex.gifFile || ex.gifSuggestion || 'não definido'}.`;
+    updateGifCacheStatus(ex, 'local');
     return;
   }
 
-  if (autoUrl) {
-    placeholder.textContent = 'Carregando GIF do Drive…';
-    img.onload = () => {
-      placeholder.classList.add('hidden');
-      img.classList.remove('hidden');
-    };
-    img.onerror = () => {
-      img.classList.add('hidden');
-      img.removeAttribute('src');
-      placeholder.textContent = 'GIF do Drive não carregou. Use “Baixar .gif no celular” ou “Trocar GIF manualmente”.';
-      placeholder.classList.remove('hidden');
-    };
-    img.src = autoUrl;
-    img.classList.remove('hidden');
-    $('gifSuggestion').textContent = ex.gifDriveId
-      ? `GIF automático via Drive: ${ex.gifFile || ex.gifSuggestion}. Toque em “Guardar GIF no app” para tentar deixar offline.`
-      : `GIF automático: ${ex.gifFile || ex.gifSuggestion}.`;
-    updateGifCacheStatus(ex);
-    return;
-  }
-
-  placeholder.textContent = 'GIF pendente';
-  $('gifSuggestion').textContent = ex.gifSuggestion && !String(ex.gifSuggestion).toLowerCase().includes('sem gif')
-    ? `Sugestão: ${ex.gifSuggestion}`
-    : 'Sem GIF automático para este exercício. Pode importar manualmente quando quiser.';
+  placeholder.textContent = 'GIF local não conectado';
+  $('gifSuggestion').textContent = ex.gifFile
+    ? `Arquivo esperado: ${ex.gifFile}. Use “Conectar pasta de GIFs” uma vez para importar automaticamente.`
+    : 'Sem GIF esperado para este exercício. Pode importar manualmente.';
   updateGifCacheStatus(ex, 'none');
 }
 
@@ -548,10 +531,9 @@ async function isGifCached(ex) {
 
 async function updateGifCacheStatus(ex, mode) {
   if (!$('gifCacheStatus')) return;
-  if (mode === 'manual') return setGifCacheStatus('GIF manual salvo no armazenamento interno do app.');
-  if (mode === 'none') return setGifCacheStatus('Sem GIF automático para guardar.');
-  const cached = await isGifCached(ex);
-  setGifCacheStatus(cached ? 'GIF já guardado no cache do app.' : 'GIF ainda não está no cache. Toque em “Guardar GIF no app”.');
+  if (mode === 'local' || mode === 'manual') return setGifCacheStatus('GIF salvo localmente neste aparelho.');
+  if (mode === 'none') return setGifCacheStatus(ex?.gifFile ? `Aguardando importação de ${ex.gifFile}.` : 'Sem GIF automático para este exercício.');
+  setGifCacheStatus('GIF local ainda não verificado.');
 }
 
 function setGifCacheStatus(message) {
@@ -563,10 +545,143 @@ function openSpotify() {
   window.open(url, '_blank', 'noopener,noreferrer');
 }
 
-function scheduleInitialGifCache() {
-  window.setTimeout(() => {
-    preloadGifsForWorkout(state.nextWorkoutId);
-  }, 1200);
+function renderGifLibraryStatus() {
+  const status = $('cacheStatus');
+  if (!status) return;
+  const lib = state?.gifLibrary;
+  if (!lib) {
+    status.textContent = 'Pasta ainda não conectada. Extraia os GIFs no celular e toque em “Conectar pasta de GIFs”.';
+    return;
+  }
+  status.textContent = `GIFs locais importados: ${lib.matches || 0}/${lib.expected || 0}. Última atualização: ${formatDateTime(lib.importedAt)}.`;
+}
+
+async function connectGifFolder() {
+  const status = $('cacheStatus');
+  try {
+    if ('storage' in navigator && navigator.storage.persist) {
+      navigator.storage.persist().catch(() => null);
+    }
+
+    if ('showDirectoryPicker' in window) {
+      if (status) status.textContent = 'Abrindo seletor de pasta…';
+      const dir = await window.showDirectoryPicker({ mode: 'read' });
+      const files = [];
+      await collectGifFilesFromDirectory(dir, files);
+      await importGifFiles(files, 'pasta local');
+      return;
+    }
+
+    $('gifFolderInput')?.click();
+  } catch (error) {
+    if (error?.name === 'AbortError') {
+      if (status) status.textContent = 'Seleção cancelada. Nenhum GIF foi alterado.';
+      return;
+    }
+    if (status) status.textContent = 'Não consegui abrir a pasta. Use “Selecionar GIFs manualmente”.';
+  }
+}
+
+async function collectGifFilesFromDirectory(directoryHandle, files) {
+  for await (const entry of directoryHandle.values()) {
+    if (entry.kind === 'file') {
+      const file = await entry.getFile();
+      if (isGifFile(file)) files.push(file);
+    } else if (entry.kind === 'directory') {
+      await collectGifFilesFromDirectory(entry, files);
+    }
+  }
+}
+
+async function importGifFolderInput(event) {
+  const files = Array.from(event.target.files || []).filter(isGifFile);
+  await importGifFiles(files, 'arquivos selecionados');
+  event.target.value = '';
+}
+
+function isGifFile(file) {
+  return file && (file.type === 'image/gif' || /\.gif$/i.test(file.name));
+}
+
+async function importGifFiles(files, sourceLabel = 'pasta local') {
+  const status = $('cacheStatus');
+  const exercises = allExercises();
+  const expected = exercises.filter(ex => ex.gifFile).length;
+
+  if (!files.length) {
+    if (status) status.textContent = 'Nenhum GIF encontrado na seleção.';
+    return;
+  }
+
+  const fileMap = new Map();
+  files.forEach(file => {
+    const key = slug(file.name.replace(/\.[^.]+$/, ''));
+    if (!fileMap.has(key)) fileMap.set(key, file);
+  });
+
+  let matches = 0;
+  const missing = [];
+
+  for (const ex of exercises) {
+    const file = findMatchingGifFile(ex, fileMap);
+    if (file) {
+      await putGif(ex.id, file);
+      matches++;
+      if (status) status.textContent = `Importando GIFs locais: ${matches}/${expected}…`;
+      await new Promise(resolve => setTimeout(resolve, 10));
+    } else if (ex.gifFile) {
+      missing.push(ex.gifFile);
+    }
+  }
+
+  state.gifLibrary = {
+    source: sourceLabel,
+    importedAt: new Date().toISOString(),
+    filesSeen: files.length,
+    matches,
+    expected,
+    missing: [...new Set(missing)].slice(0, 30)
+  };
+  saveState();
+  renderGifLibraryStatus();
+
+  if (currentWorkout) await loadGifForExercise(currentExercise());
+  vibrate(120);
+}
+
+function allExercises() {
+  return data.workouts.flatMap(workout => workout.exercises || []);
+}
+
+function findMatchingGifFile(ex, fileMap) {
+  const candidates = gifCandidateSlugs(ex);
+  for (const key of candidates) {
+    if (fileMap.has(key)) return fileMap.get(key);
+  }
+  return null;
+}
+
+function gifCandidateSlugs(ex) {
+  const values = [ex.gifFile, ex.name, ...(ex.gifAliases || [])].filter(Boolean);
+  return [...new Set(values.map(value => slug(String(value).replace(/\.[^.]+$/, ''))))];
+}
+
+function slug(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function formatDateTime(value) {
+  if (!value) return '—';
+  try {
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+  } catch (_) {
+    return value;
+  }
 }
 
 function openDb() {
@@ -789,7 +904,7 @@ function clearMeasures() {
 function exportMeasures() {
   const payload = {
     app: 'Personal Academia Smart',
-    version: '14.5',
+    version: '14.7',
     exportedAt: new Date().toISOString(),
     profile: state.profile,
     measures: state.measures,
@@ -800,7 +915,7 @@ function exportMeasures() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'personal-academia-smart-v14.5-dados.json';
+  a.download = 'personal-academia-smart-v14.7-dados.json';
   a.click();
   URL.revokeObjectURL(url);
 }

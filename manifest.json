@@ -1,11 +1,11 @@
 {
   "name": "Personal Academia Smart",
   "short_name": "Personal Smart",
-  "description": "Treino sequencial, GIFs via Drive/cache, medidas, IMC, evolução e Spotify direto.",
+  "description": "Treino ABC sequencial, GIFs por pasta local, medidas, IMC, evolução e Spotify direto.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0b1020",
-  "theme_color": "#00d6c8",
+  "theme_color": "#111827",
   "orientation": "portrait",
   "icons": [
     {

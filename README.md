@@ -1,32 +1,44 @@
-# Personal Academia Smart V14.6
+# Personal Academia Smart V14.7
 
-PWA leve para GitHub Pages com treino sequencial, medidas/evolução e GIFs carregados pelo Google Drive com cache no app.
+Versão revisada conforme as diretrizes fixadas: **ABC científico**, sem rotina ABCDEF e sem sequência A–F como padrão.
 
-## O que mudou na V14.6
+## Estrutura
 
-- Remove os GIFs físicos do repositório para evitar limite de upload do GitHub.
-- Usa `gifDriveId` em `data/workouts.json` para carregar o GIF direto do Google Drive.
-- Botão **Guardar GIF no app** no exercício atual.
-- Botão **Guardar GIFs do próximo treino** na tela inicial.
-- Botão **Guardar todos os GIFs mapeados** para pré-carregar tudo gradualmente.
-- Botão **Baixar .gif no celular** como plano B, abrindo o download do Drive.
-- Ícone do app redesenhado em `assets/icons/`.
-- Botão **Spotify** direto no cabeçalho.
-- Tela do exercício mais compacta: pontos de atenção, carga/notas e GIF/cache fechados por padrão.
+Sequência do app:
 
-## Observação sobre cache e celular
+```text
+A → B → C → A → B → C
+```
 
-O navegador não pode salvar arquivos sozinho em uma pasta do celular sem permissão. A V14.6 faz o caminho mais prático para PWA:
+Não é atrelada ao dia da semana. Se houver descanso, a sequência não avança.
 
-1. Carrega o GIF pelo Drive.
-2. Guarda no cache interno do app quando você toca em **Guardar GIF no app** ou **Guardar GIFs do próximo treino**.
-3. Tenta exibir pelo cache nas próximas aberturas.
+## Treinos
 
-O botão **Baixar .gif no celular** abre o download do arquivo para a pasta padrão de downloads do Android, mas esse arquivo baixado não é lido automaticamente pelo app. Para o app, o que importa é o cache PWA.
+- **A — Upper:** Peito + Costas + Ombros + braços leve
+- **B — Lower:** Quadríceps + posterior + glúteos + panturrilhas + core
+- **C — Full Body Estético:** novo estímulo para superiores e inferiores com foco em amplitude útil e controle de fadiga
 
-## Arquivos para subir no GitHub
+## Princípios de treino
 
-Suba a pasta inteira, sem `assets/gifs/`:
+- Maior frequência por grupamento muscular.
+- Volume por sessão controlado para reduzir junk volume.
+- Séries próximas da falha com técnica: compostos em 1–3 RIR; máquinas/isoladores em 0–2 RIR.
+- Foco em tensão mecânica, amplitude útil e posições alongadas.
+- Descanso não pula treino.
+
+## GIFs
+
+A V14.7 não leva os GIFs no GitHub. O app importa de uma pasta local:
+
+1. Salve/extrai a pasta **GIFs Personal Academia Smart V14.4** no celular.
+2. Abra o app.
+3. Toque em **Conectar pasta de GIFs**.
+4. Selecione a pasta ou os arquivos `.gif`.
+5. O app importa os GIFs compatíveis para o armazenamento local.
+
+## Arquivos para GitHub Pages
+
+Suba estes arquivos/pastas:
 
 ```text
 index.html
@@ -35,16 +47,8 @@ app.js
 manifest.json
 service-worker.js
 README.md
-data/workouts.json
+data/
 assets/icons/
 ```
 
-## Depois de publicar
-
-Abra:
-
-```text
-https://etartaggia67-ui.github.io/personal-academia-smart/
-```
-
-Se aparecer versão antiga, limpe o cache/service worker ou aguarde o GitHub Pages atualizar.
+Não suba `assets/gifs/`.
