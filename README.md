@@ -1,6 +1,6 @@
-# Personal Academia Smart V14.7
+# Personal Academia Smart V14.8
 
-Versão revisada conforme as diretrizes fixadas: **ABC científico**, sem rotina ABCDEF e sem sequência A–F como padrão.
+Versão revisada conforme as diretrizes fixadas: **ABC científico Smart Fit**, sem rotina ABCDEF e sem sequência A–F como padrão.
 
 ## Estrutura
 
@@ -28,7 +28,7 @@ Não é atrelada ao dia da semana. Se houver descanso, a sequência não avança
 
 ## GIFs
 
-A V14.7 não leva os GIFs no GitHub. O app importa de uma pasta local:
+A V14.8 não leva os GIFs no GitHub. O app importa de uma pasta local:
 
 1. Salve/extrai a pasta **GIFs Personal Academia Smart V14.4** no celular.
 2. Abra o app.

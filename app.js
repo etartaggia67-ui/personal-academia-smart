@@ -1,8 +1,8 @@
-const STATE_KEY = 'pas_v147_state';
-const LEGACY_STATE_KEYS = ['pas_v146_state', 'pas_v145_state', 'pas_v144_state', 'pas_v143_state'];
-const DB_NAME = 'pas_v147_local_gifs';
+const STATE_KEY = 'pas_v148_state';
+const LEGACY_STATE_KEYS = ['pas_v147_state', 'pas_v146_state', 'pas_v145_state', 'pas_v144_state', 'pas_v143_state'];
+const DB_NAME = 'pas_v148_local_gifs';
 const DB_STORE = 'gifs';
-const REMOTE_GIF_CACHE = 'pas_v147_legacy_gifs';
+const REMOTE_GIF_CACHE = 'pas_v148_legacy_gifs';
 
 let data;
 let state;
@@ -27,7 +27,9 @@ async function init() {
   renderHome();
   renderMeasures();
   renderGifLibraryStatus();
+  renderSmartFitMachines();
 }
+
 
 function defaultState() {
   return {
@@ -110,6 +112,25 @@ function renderHome() {
   $('lastDone').textContent = state.lastDone ? `Treino ${state.lastDone}` : 'Nenhum';
   $('sequencePills').innerHTML = data.sequence.map(id => `<span class="pill ${id === state.nextWorkoutId ? 'active' : ''}">${id}</span>`).join('');
   renderGifLibraryStatus();
+  renderSmartFitMachines();
+}
+
+
+function renderSmartFitMachines() {
+  const el = $('smartMachinesList');
+  if (!el || !data?.smartFitMachines) return;
+  el.innerHTML = data.smartFitMachines
+    .map(m => `<span><b>#${m.number}</b> ${m.name}</span>`)
+    .join('');
+}
+
+function renderWarmup(workout) {
+  const list = $('warmupList');
+  const card = $('warmupCard');
+  if (!list || !card) return;
+  const items = workout?.warmup || [];
+  card.classList.toggle('hidden', !items.length);
+  list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
 }
 
 function bindEvents() {
@@ -164,6 +185,7 @@ function startWorkout(id) {
   $('workoutId').textContent = `Treino ${currentWorkout.id}`;
   $('workoutTitle').textContent = currentWorkout.title;
   $('workoutSubtitle').textContent = currentWorkout.subtitle;
+  renderWarmup(currentWorkout);
   renderExercise();
   $('workoutPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -181,8 +203,9 @@ async function renderExercise() {
   const ex = currentExercise();
   $('exerciseProgress').textContent = `Exercício ${currentExerciseIndex + 1}/${currentWorkout.exercises.length}`;
   $('exerciseName').textContent = ex.name;
-  $('exerciseMeta').textContent = `${ex.sets} séries · ${ex.reps} · ${ex.group}`;
-  $('exerciseMachine').textContent = ex.machine;
+  const machineLabel = ex.machine && ex.machine !== 'Livre' ? `Smart Fit #${ex.machine} · ${ex.machineName || 'máquina'}` : (ex.machineName || 'Livre');
+  $('exerciseMeta').textContent = `${ex.sets} séries · ${ex.reps} · ${ex.group} · ${machineLabel}`;
+  $('exerciseMachine').textContent = ex.machine && ex.machine !== 'Livre' ? `#${ex.machine}` : 'Livre';
   $('exerciseAttention').textContent = ex.attention || 'Execute com controle, amplitude confortável e técnica estável.';
   $('alternativesList').innerHTML = (ex.alternatives || []).map(a => `<li>${a}</li>`).join('');
   loadPerformance(ex.id);
@@ -904,7 +927,7 @@ function clearMeasures() {
 function exportMeasures() {
   const payload = {
     app: 'Personal Academia Smart',
-    version: '14.7',
+    version: '14.8',
     exportedAt: new Date().toISOString(),
     profile: state.profile,
     measures: state.measures,

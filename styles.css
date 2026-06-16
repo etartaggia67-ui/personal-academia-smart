@@ -197,3 +197,14 @@ details.load-card label { margin-top: 10px; }
   .gif-box { min-height: 108px; max-height: 150px; }
   .gif-box img { max-height: 150px; }
 }
+
+/* V14.8 — restaura aquecimento e equipamentos Smart Fit */
+.machine-panel details { padding: 10px; }
+.machine-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.machine-list span { display: block; background: rgba(255,255,255,.045); border: 1px solid var(--line); border-radius: 12px; padding: 8px 9px; color: var(--muted); font-size: .84rem; line-height: 1.25; }
+.machine-list b { color: var(--text); }
+.warmup-card { border: 1px solid rgba(255, 209, 102, .22); border-radius: 16px; padding: 11px 12px; background: rgba(255, 209, 102, .055); }
+.warmup-title { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin-bottom: 6px; }
+.warmup-card ul { margin-top: 6px; line-height: 1.35; font-size: .88rem; }
+.warmup-card li { margin-bottom: 4px; }
+@media (max-width: 720px) { .machine-list { grid-template-columns: 1fr; } }

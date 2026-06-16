@@ -1,24 +1,39 @@
 {
-  "version": "14.7",
-  "sequence": [
-    "A",
-    "B",
-    "C"
-  ],
+  "version": "14.8",
+  "sequence": ["A", "B", "C"],
   "defaultProfile": {
     "heightCm": 168,
     "idealGoalKg": 70,
     "realGoalKg": 75
   },
   "method": {
-    "name": "ABC sequencial científico",
+    "name": "ABC sequencial científico — Smart Fit Tarumã",
     "principles": [
-      "Frequência maior que 1x por músculo no ciclo, sem depender de calendário.",
+      "Sequência ABC, sem amarrar ao dia da semana.",
+      "Cada grupo muscular recebe estímulo mais de 1x por ciclo, evitando o modelo ABCDEF de 1x por semana.",
       "Volume por sessão controlado para reduzir junk volume.",
-      "Proximidade da falha com técnica: compostos em 1–3 RIR; máquinas/isoladores em 0–2 RIR.",
-      "Priorizar tensão em amplitude útil e posições alongadas sem perder controle articular."
+      "Priorizar máquinas confirmadas da Smart Fit Tarumã e exercícios com GIF local quando houver arquivo mapeado.",
+      "Compostos em 1–3 RIR; máquinas e isoladores em 0–2 RIR, sem falha desnecessária em todos os exercícios."
     ]
   },
+  "smartFitMachines": [
+    {"number":"01", "name":"Leg Press"},
+    {"number":"04", "name":"Cadeira Abdutora"},
+    {"number":"05", "name":"Cadeira Adutora"},
+    {"number":"06", "name":"Glúteo Máquina"},
+    {"number":"08", "name":"Cadeira Extensora"},
+    {"number":"10", "name":"Cadeira Flexora"},
+    {"number":"24", "name":"Supino Inclinado Máquina"},
+    {"number":"26", "name":"Peck Deck / Deltóide Posterior"},
+    {"number":"30", "name":"Tríceps Máquina"},
+    {"number":"31", "name":"Remada Baixa"},
+    {"number":"40", "name":"Abdominal / Lombar"},
+    {"number":"50", "name":"Shoulder Press"},
+    {"number":"56", "name":"Supino Convergente"},
+    {"number":"57", "name":"Puxada Alta"},
+    {"number":"61", "name":"Graviton"},
+    {"number":"62", "name":"Polias / Crossover"}
+  ],
   "gifMode": "local-folder",
   "localGifFilesExpected": [
     "supino-inclinado-maquina.gif",
@@ -47,423 +62,362 @@
   "workouts": [
     {
       "id": "A",
-      "title": "Upper — Peito + Costas + Ombros",
-      "subtitle": "Estímulo superior completo, alternando empurrar e puxar para manter performance e reduzir fadiga local.",
+      "title": "Upper 1 — Peito + Costas + Ombros",
+      "subtitle": "Superior completo usando máquinas confirmadas da Smart Fit. Empurrar e puxar alternados para manter performance e reduzir fadiga local.",
+      "warmup": [
+        "Bike ou esteira leve — 5 min",
+        "Mobilidade rápida de ombros e escápulas — 2 min",
+        "Supino Inclinado Máquina #24 — 1–2 séries leves de 12 reps",
+        "Puxada Alta #57 — 1 série leve de 12 reps"
+      ],
       "exercises": [
         {
           "id": "a1",
           "name": "Supino Inclinado Máquina",
           "group": "Peitoral",
           "machine": "24",
+          "machineName": "Supino Inclinado Máquina",
           "sets": 3,
           "reps": "8–12",
           "rest": 90,
           "gifFile": "supino-inclinado-maquina.gif",
-          "gifAliases": [
-            "supino inclinado maquina",
-            "supino inclinado"
-          ],
-          "attention": "Escápulas apoiadas, peito alto e descida controlada. Pare 1–2 reps antes de perder amplitude ou deixar o ombro dominar.",
-          "alternatives": [
-            "Supino Convergente 56",
-            "Voador / Peck Deck 26"
-          ]
+          "gifAliases": ["supino inclinado maquina", "supino inclinado", "incline press"],
+          "attention": "Escápulas apoiadas, peito alto e descida controlada. Busque alongamento útil do peitoral sem jogar o ombro para frente.",
+          "alternatives": ["Supino Convergente #56", "Voador / Peck Deck #26"]
         },
         {
           "id": "a2",
           "name": "Puxada Alta",
           "group": "Costas",
           "machine": "57",
+          "machineName": "Puxada Alta",
           "sets": 3,
           "reps": "8–12",
           "rest": 90,
           "gifFile": "puxada-alta.gif",
-          "gifAliases": [
-            "puxada alta",
-            "lat pulldown"
-          ],
-          "attention": "Deixe a escápula subir controlada no alongamento e puxe sem jogar o tronco para trás. Costas trabalham, ego assiste.",
-          "alternatives": [
-            "Graviton 61",
-            "Remada Baixa 31"
-          ]
+          "gifAliases": ["puxada alta", "lat pulldown", "puxada frente"],
+          "attention": "Deixe a escápula subir de forma controlada no alongamento e puxe sem inclinar demais o tronco. Costas trabalham; lombar não faz participação especial.",
+          "alternatives": ["Graviton #61", "Remada Baixa #31"]
         },
         {
           "id": "a3",
           "name": "Remada Baixa",
           "group": "Costas",
           "machine": "31",
+          "machineName": "Remada Baixa",
           "sets": 3,
           "reps": "8–12",
           "rest": 90,
           "gifFile": "remada-baixa.gif",
-          "gifAliases": [
-            "remada baixa",
-            "remada sentada"
-          ],
-          "attention": "Alcance leve à frente para alongar dorsais, depois puxe com cotovelos. Evite transformar em lombar dinâmica.",
-          "alternatives": [
-            "Puxada Alta 57",
-            "Remada unilateral halter"
-          ]
+          "gifAliases": ["remada baixa", "remada sentada", "seated row"],
+          "attention": "Alcance levemente à frente para alongar dorsais e puxe com cotovelos. Evite virar uma extensão lombar disfarçada.",
+          "alternatives": ["Puxada Alta #57", "Remada unilateral com halter"]
         },
         {
           "id": "a4",
           "name": "Voador / Peck Deck",
           "group": "Peitoral",
           "machine": "26",
+          "machineName": "Peck Deck / Voador",
           "sets": 2,
           "reps": "12–15",
           "rest": 75,
           "gifFile": "peck-deck-voador.gif",
-          "gifAliases": [
-            "peck deck voador",
-            "voador",
-            "peck"
-          ],
-          "attention": "Amplitude útil no alongamento, sem arremessar os ombros para frente. Pausa curta na contração.",
-          "alternatives": [
-            "Supino Inclinado 24",
-            "Crucifixo com halteres"
-          ]
+          "gifAliases": ["peck deck", "voador", "fly", "crucifixo maquina"],
+          "attention": "Controle o alongamento do peitoral sem perder ombros. Segure um instante na contração, sem bater placas.",
+          "alternatives": ["Supino Inclinado #24", "Crucifixo com halteres"]
         },
         {
           "id": "a5",
-          "name": "Shoulder Press",
+          "name": "Shoulder Press Máquina",
           "group": "Ombros",
           "machine": "50",
+          "machineName": "Shoulder Press",
           "sets": 3,
           "reps": "8–12",
           "rest": 90,
-          "gifFile": "elevacao-lateral.gif",
-          "gifAliases": [
-            "shoulder press",
-            "desenvolvimento",
-            "elevacao lateral"
-          ],
-          "attention": "Use trajetória confortável para o ombro. Se a máquina incomodar, troque por elevação lateral controlada.",
-          "alternatives": [
-            "Elevação lateral com halteres",
-            "Desenvolvimento com halteres"
-          ]
+          "gifFile": "",
+          "gifAliases": ["shoulder press", "desenvolvimento maquina", "press ombro"],
+          "attention": "Trajetória confortável, sem forçar rotação do ombro. Se incomodar, reduza carga ou troque por elevação lateral.",
+          "alternatives": ["Elevação lateral com halteres", "Desenvolvimento com halteres"]
         },
         {
           "id": "a6",
           "name": "Tríceps Pulley Barra V",
           "group": "Tríceps",
           "machine": "62",
+          "machineName": "Polia / Crossover",
           "sets": 2,
           "reps": "10–15",
           "rest": 75,
           "gifFile": "triceps-pulley-barra.gif",
-          "gifAliases": [
-            "triceps pulley barra",
-            "barra v"
-          ],
-          "attention": "Cotovelos fixos, ombros baixos e extensão completa sem balançar o tronco.",
-          "alternatives": [
-            "Tríceps Máquina 30",
-            "Tríceps Pulley Corda 62"
-          ]
+          "gifAliases": ["triceps pulley barra", "barra v", "triceps barra"],
+          "attention": "Cotovelos fixos, ombros baixos e extensão completa. Se o tronco balança, a carga virou vaidade.",
+          "alternatives": ["Tríceps Máquina #30", "Tríceps Pulley Corda #62"]
         },
         {
           "id": "a7",
           "name": "Rosca Alternada com Halteres",
           "group": "Bíceps",
           "machine": "Livre",
+          "machineName": "Halteres",
           "sets": 2,
           "reps": "10–12",
           "rest": 75,
           "gifFile": "rosca-alternada-halteres.gif",
-          "gifAliases": [
-            "rosca alternada halteres",
-            "rosca alternada"
-          ],
-          "attention": "Desça até alongar o bíceps mantendo controle. Cotovelos próximos ao corpo; sem embalo de quadril.",
-          "alternatives": [
-            "Rosca Direta na Polia 62",
-            "Rosca direta com barra"
-          ]
+          "gifAliases": ["rosca alternada", "rosca alternada halteres", "biceps halteres"],
+          "attention": "Desça controlando até alongar o bíceps. Cotovelos próximos ao corpo; sem embalo de quadril.",
+          "alternatives": ["Rosca direta na polia #62", "Rosca direta com barra"]
         }
       ]
     },
     {
       "id": "B",
       "title": "Lower — Pernas + Glúteos + Core",
-      "subtitle": "Volume de pernas distribuído sem massacre inútil. Quadríceps, posterior, glúteos, panturrilhas e core no mesmo bloco.",
+      "subtitle": "Pernas com máquinas confirmadas: quadríceps, posterior, adutores, abdutores, glúteos, panturrilha e core sem destruir a recuperação.",
+      "warmup": [
+        "Bike leve — 5 min",
+        "Leg Press #01 — 2 séries progressivas leves de 12 reps",
+        "Cadeira Flexora #10 — 1 série leve de 15 reps",
+        "Mobilidade de tornozelo/quadril — 1 min"
+      ],
       "exercises": [
         {
           "id": "b1",
           "name": "Leg Press",
           "group": "Quadríceps/Glúteos",
           "machine": "01",
+          "machineName": "Leg Press",
           "sets": 4,
           "reps": "8–12",
           "rest": 90,
           "gifFile": "leg-press.gif",
-          "gifAliases": [
-            "leg press"
-          ],
-          "attention": "Desça até amplitude segura sem descolar lombar. Joelho acompanha a linha do pé; controle a volta.",
-          "alternatives": [
-            "Agachamento Goblet",
-            "Cadeira Extensora 08"
-          ]
+          "gifAliases": ["leg press", "legpress"],
+          "attention": "Desça até amplitude segura sem descolar a lombar. Joelho acompanha a linha do pé; controle a volta.",
+          "alternatives": ["Agachamento Goblet", "Cadeira Extensora #08"]
         },
         {
           "id": "b2",
           "name": "Cadeira Extensora",
           "group": "Quadríceps",
           "machine": "08",
+          "machineName": "Cadeira Extensora",
           "sets": 3,
           "reps": "10–15",
           "rest": 75,
           "gifFile": "cadeira-extensora.gif",
-          "gifAliases": [
-            "cadeira extensora",
-            "extensora"
-          ],
-          "attention": "Segure a contração no topo e controle a descida. Não use impulso para vencer a primeira metade.",
-          "alternatives": [
-            "Leg Press 01",
-            "Agachamento Goblet"
-          ]
+          "gifAliases": ["cadeira extensora", "extensora"],
+          "attention": "Segure a contração no topo e controle a descida. Excelente para quadríceps sem precisar inflar a carga do leg press.",
+          "alternatives": ["Leg Press #01", "Agachamento Goblet"]
         },
         {
           "id": "b3",
           "name": "Cadeira Flexora",
           "group": "Posterior de coxa",
           "machine": "10",
+          "machineName": "Cadeira Flexora",
           "sets": 3,
           "reps": "10–15",
           "rest": 75,
           "gifFile": "cadeira-flexora.gif",
-          "gifAliases": [
-            "cadeira flexora",
-            "flexora"
-          ],
-          "attention": "Controle a fase excêntrica. Posterior responde bem quando você não deixa a carga voltar sozinha.",
-          "alternatives": [
-            "Stiff com Halteres",
-            "Mesa flexora"
-          ]
+          "gifAliases": ["cadeira flexora", "flexora"],
+          "attention": "Controle a fase excêntrica. Posterior responde bem quando a carga não volta sozinha.",
+          "alternatives": ["Stiff com Halteres", "Mesa flexora"]
         },
         {
           "id": "b4",
+          "name": "Glúteo Máquina",
+          "group": "Glúteos",
+          "machine": "06",
+          "machineName": "Glúteo Máquina",
+          "sets": 3,
+          "reps": "10–12 cada lado",
+          "rest": 75,
+          "gifFile": "",
+          "gifAliases": ["gluteo maquina", "gluteo", "coice maquina"],
+          "attention": "Tronco firme, quadril estável e extensão controlada. Não transforme em balanço de lombar.",
+          "alternatives": ["Coice na polia #62", "Stiff com halteres"]
+        },
+        {
+          "id": "b5",
           "name": "Cadeira Adutora",
           "group": "Adutores",
           "machine": "05",
+          "machineName": "Cadeira Adutora",
           "sets": 2,
           "reps": "12–15",
           "rest": 60,
           "gifFile": "cadeira-adutora.gif",
-          "gifAliases": [
-            "cadeira adutora",
-            "adutora"
-          ],
-          "attention": "Use amplitude confortável e controle total na volta. Sem bater placas no final.",
-          "alternatives": [
-            "Adução na polia 62",
-            "Agachamento sumô leve"
-          ]
+          "gifAliases": ["cadeira adutora", "adutora"],
+          "attention": "Amplitude confortável e volta controlada. Sem bater placas no final.",
+          "alternatives": ["Adução na polia #62", "Agachamento sumô leve"]
         },
         {
-          "id": "b5",
+          "id": "b6",
           "name": "Cadeira Abdutora",
           "group": "Glúteo médio",
           "machine": "04",
+          "machineName": "Cadeira Abdutora",
           "sets": 2,
           "reps": "12–15",
           "rest": 60,
           "gifFile": "cadeira-abdutora.gif",
-          "gifAliases": [
-            "cadeira abdutora",
-            "abdutora"
-          ],
+          "gifAliases": ["cadeira abdutora", "abdutora"],
           "attention": "Incline levemente o tronco se ajudar a sentir glúteo médio. Controle total na volta.",
-          "alternatives": [
-            "Abdução na polia 62",
-            "Abdutora em pé"
-          ]
+          "alternatives": ["Abdução na polia #62", "Abdutora em pé"]
         },
         {
-          "id": "b6",
+          "id": "b7",
           "name": "Panturrilha no Leg Press",
           "group": "Panturrilhas",
           "machine": "01",
+          "machineName": "Leg Press",
           "sets": 4,
           "reps": "10–15",
           "rest": 60,
           "gifFile": "panturrilha.gif",
-          "gifAliases": [
-            "panturrilha",
-            "calf"
-          ],
-          "attention": "Pausa real embaixo no alongamento e subida completa. Meia repetição aqui é decoração de tornozelo.",
-          "alternatives": [
-            "Panturrilha Máquina",
-            "Panturrilha em pé"
-          ]
+          "gifAliases": ["panturrilha", "calf", "panturrilha leg press"],
+          "attention": "Pausa real embaixo no alongamento e subida completa. Meia repetição aqui é enfeite de tornozelo.",
+          "alternatives": ["Panturrilha Máquina", "Panturrilha em pé"]
         },
         {
-          "id": "b7",
+          "id": "b8",
           "name": "Abdominal Máquina",
-          "group": "Abdominal",
+          "group": "Core",
           "machine": "40",
+          "machineName": "Abdominal / Lombar",
           "sets": 3,
           "reps": "10–15",
           "rest": 60,
           "gifFile": "abdominal-maquina.gif",
-          "gifAliases": [
-            "abdominal maquina",
-            "abdominal"
-          ],
-          "attention": "Flexione o tronco com controle e expire. Não puxe com braço; a carga é para abdômen, não para bíceps carente.",
-          "alternatives": [
-            "Prancha",
-            "Dead bug"
-          ]
+          "gifAliases": ["abdominal maquina", "abdominal"],
+          "attention": "Flexione o tronco com controle e expire. Não puxe com os braços.",
+          "alternatives": ["Prancha", "Dead bug"]
         }
       ]
     },
     {
       "id": "C",
-      "title": "Full Body Estético — Frequência + Alongamento",
-      "subtitle": "Segundo estímulo do ciclo para superiores e inferiores, com foco em amplitude útil, posição alongada e menor junk volume.",
+      "title": "Full Body Estético — Segundo estímulo",
+      "subtitle": "Reforço de peito, costas, pernas e ombros com volume menor, amplitude útil e controle de fadiga.",
+      "warmup": [
+        "Esteira ou bike leve — 5 min",
+        "Mobilidade de quadril e ombros — 2 min",
+        "Supino Convergente #56 ou Graviton #61 — 1 série leve",
+        "Stiff com halteres — 1 série técnica leve"
+      ],
       "exercises": [
         {
           "id": "c1",
+          "name": "Supino Convergente",
+          "group": "Peitoral",
+          "machine": "56",
+          "machineName": "Supino Convergente",
+          "sets": 3,
+          "reps": "8–12",
+          "rest": 90,
+          "gifFile": "",
+          "gifAliases": ["supino convergente", "chest press", "press peito"],
+          "attention": "Escápulas estáveis, peito alto e amplitude controlada. Use como segundo estímulo de peitoral do ciclo.",
+          "alternatives": ["Supino Inclinado Máquina #24", "Voador / Peck Deck #26"]
+        },
+        {
+          "id": "c2",
           "name": "Graviton / Barra Assistida",
           "group": "Costas/Bíceps",
           "machine": "61",
+          "machineName": "Graviton",
           "sets": 3,
           "reps": "8–10",
           "rest": 90,
           "gifFile": "graviton-barra-assistida.gif",
-          "gifAliases": [
-            "graviton barra assistida",
-            "graviton"
-          ],
-          "attention": "Controle a descida e deixe as costas alongarem sem relaxar ombros. Use assistência suficiente para repetir limpo.",
-          "alternatives": [
-            "Puxada Alta 57",
-            "Remada Baixa 31"
-          ]
-        },
-        {
-          "id": "c2",
-          "name": "Supino Convergente",
-          "group": "Peitoral",
-          "machine": "56",
-          "sets": 3,
-          "reps": "8–12",
-          "rest": 90,
-          "gifFile": "supino-inclinado-maquina.gif",
-          "gifAliases": [
-            "supino convergente",
-            "chest press",
-            "supino inclinado maquina"
-          ],
-          "attention": "Empurre com trajetória estável e sem perder escápulas. Se não houver GIF específico, use o de supino inclinado como referência visual provisória.",
-          "alternatives": [
-            "Supino Inclinado Máquina 24",
-            "Voador / Peck Deck 26"
-          ]
+          "gifAliases": ["graviton", "barra assistida", "pull up assistido"],
+          "attention": "Controle a descida e deixe as costas alongarem sem relaxar os ombros. Use assistência suficiente para repetir limpo.",
+          "alternatives": ["Puxada Alta #57", "Remada Baixa #31"]
         },
         {
           "id": "c3",
-          "name": "Stiff com Halteres",
-          "group": "Posterior/Glúteos",
-          "machine": "Livre",
-          "sets": 3,
-          "reps": "8–12",
-          "rest": 90,
-          "gifFile": "stiff-halteres.gif",
-          "gifAliases": [
-            "stiff halteres",
-            "stiff"
-          ],
-          "attention": "Quadril para trás, coluna neutra e halteres próximos às pernas. Pare a descida quando perder posição, não quando o chão acabar.",
-          "alternatives": [
-            "Cadeira Flexora 10",
-            "Levantamento terra romeno"
-          ]
-        },
-        {
-          "id": "c4",
           "name": "Agachamento Goblet",
           "group": "Quadríceps/Glúteos",
           "machine": "Livre",
+          "machineName": "Halteres",
           "sets": 3,
           "reps": "10–12",
           "rest": 90,
           "gifFile": "agachamento-goblet.gif",
-          "gifAliases": [
-            "agachamento goblet",
-            "goblet"
-          ],
-          "attention": "Desça com tronco firme e joelhos acompanhando os pés. Priorize amplitude controlada antes de carga.",
-          "alternatives": [
-            "Leg Press 01",
-            "Cadeira Extensora 08"
-          ]
+          "gifAliases": ["agachamento goblet", "goblet"],
+          "attention": "Tronco firme, joelhos acompanhando os pés e amplitude controlada. Se a lombar reclamar, reduza carga e amplitude.",
+          "alternatives": ["Leg Press #01", "Cadeira Extensora #08"]
+        },
+        {
+          "id": "c4",
+          "name": "Stiff com Halteres",
+          "group": "Posterior/Glúteos",
+          "machine": "Livre",
+          "machineName": "Halteres",
+          "sets": 3,
+          "reps": "8–12",
+          "rest": 90,
+          "gifFile": "stiff-halteres.gif",
+          "gifAliases": ["stiff", "stiff halteres", "levantamento terra romeno"],
+          "attention": "Quadril para trás, coluna neutra e halteres próximos às pernas. Pare quando perder posição, não quando o chão acabar.",
+          "alternatives": ["Cadeira Flexora #10", "Glúteo Máquina #06"]
         },
         {
           "id": "c5",
-          "name": "Deltóide Posterior",
-          "group": "Ombros/Parte posterior",
+          "name": "Deltóide Posterior no Peck Deck",
+          "group": "Ombros posterior",
           "machine": "26",
+          "machineName": "Peck Deck / Deltóide Posterior",
           "sets": 3,
           "reps": "12–15",
           "rest": 75,
           "gifFile": "deltoide-posterior.gif",
-          "gifAliases": [
-            "deltoide posterior",
-            "posterior"
-          ],
-          "attention": "Cotovelos abertos e movimento controlado. Não transforme em remada pesada; aqui é precisão, não mudança de endereço da máquina.",
-          "alternatives": [
-            "Face pull na polia 62",
-            "Remada alta leve"
-          ]
+          "gifAliases": ["deltoide posterior", "posterior", "reverse fly"],
+          "attention": "Cotovelos abertos e movimento limpo. Aqui é precisão, não remada pesada.",
+          "alternatives": ["Face pull na polia #62", "Elevação posterior com halteres"]
         },
         {
           "id": "c6",
           "name": "Tríceps Máquina",
           "group": "Tríceps",
           "machine": "30",
+          "machineName": "Tríceps Máquina",
           "sets": 2,
           "reps": "10–12",
           "rest": 75,
           "gifFile": "triceps-maquina.gif",
-          "gifAliases": [
-            "triceps maquina",
-            "triceps maquina"
-          ],
+          "gifAliases": ["triceps maquina", "maquina de flexao de triceps"],
           "attention": "Empurre até extensão completa sem travar agressivamente o cotovelo. Ombros estáveis.",
-          "alternatives": [
-            "Tríceps Pulley Barra V 62",
-            "Tríceps Pulley Corda 62"
-          ]
+          "alternatives": ["Tríceps Pulley Barra V #62", "Tríceps Pulley Corda #62"]
         },
         {
           "id": "c7",
-          "name": "Prancha",
-          "group": "Core",
+          "name": "Elevação Lateral com Halteres",
+          "group": "Ombros lateral",
           "machine": "Livre",
-          "sets": 3,
-          "reps": "30–45s",
+          "machineName": "Halteres",
+          "sets": 2,
+          "reps": "12–15",
           "rest": 60,
-          "gifFile": "prancha.gif",
-          "gifAliases": [
-            "prancha",
-            "plank"
-          ],
-          "attention": "Glúteos contraídos, abdômen firme e respiração controlada. Se a lombar cair, a série acabou.",
-          "alternatives": [
-            "Abdominal Máquina 40",
-            "Lombar Máquina 40"
-          ]
+          "gifFile": "elevacao-lateral.gif",
+          "gifAliases": ["elevacao lateral", "elevação lateral", "lateral raise"],
+          "attention": "Suba controlado até a linha do ombro. Evite roubar com trapézio e balanço do corpo.",
+          "alternatives": ["Shoulder Press #50", "Elevação lateral na polia #62"]
+        },
+        {
+          "id": "c8",
+          "name": "Lombar Máquina",
+          "group": "Eretores da espinha",
+          "machine": "40",
+          "machineName": "Abdominal / Lombar",
+          "sets": 2,
+          "reps": "12–15",
+          "rest": 60,
+          "gifFile": "lombar-maquina.gif",
+          "gifAliases": ["lombar maquina", "extensao lombar", "hiperextensao"],
+          "attention": "Movimento controlado, sem hiperextender no final. Pense em fortalecer, não em dobrar a lombar no grito.",
+          "alternatives": ["Prancha", "Dead bug"]
         }
       ]
     }

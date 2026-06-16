@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111827" />
-  <title>Personal Academia Smart V14.7</title>
+  <title>Personal Academia Smart V14.8</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
   <link rel="stylesheet" href="styles.css" />
@@ -13,8 +13,8 @@
   <header class="app-header">
     <div>
       <p class="eyebrow">Personal Academia Smart</p>
-      <h1>V14.7</h1>
-      <p class="muted">ABC científico · GIFs por pasta local · Spotify direto</p>
+      <h1>V14.8</h1>
+      <p class="muted">ABC científico · Smart Fit Tarumã · aquecimento restaurado</p>
     </div>
     <div class="header-actions">
       <button id="spotifyBtn" class="spotify" type="button">Spotify</button>
@@ -50,6 +50,14 @@
         <div><span class="label">Descanso padrão</span><strong>90s</strong></div>
       </section>
 
+
+      <section class="card machine-panel">
+        <details>
+          <summary>Máquinas Smart Fit Tarumã usadas no treino</summary>
+          <div id="smartMachinesList" class="machine-list compact-list"></div>
+        </details>
+      </section>
+
       <section class="card cache-panel">
         <div class="section-head compact-head">
           <div>
@@ -75,6 +83,15 @@
           </div>
           <button id="closeWorkoutBtn" class="ghost" type="button">Fechar</button>
         </div>
+
+
+        <section class="warmup-card" id="warmupCard">
+          <div class="warmup-title">
+            <p class="eyebrow">Aquecimento</p>
+            <strong>Antes do primeiro exercício</strong>
+          </div>
+          <ul id="warmupList"></ul>
+        </section>
 
         <div class="exercise-card">
           <div class="exercise-top">
